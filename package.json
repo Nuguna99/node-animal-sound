@@ -1,0 +1,14 @@
+{
+  "name": "medical-expense-support-system",
+  "version": "1.0.0",
+  "description": "의료비 지원 시스템 (Medical Expense Support System)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "uuid": "^9.0.0"
+  }
+}

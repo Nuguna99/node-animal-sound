@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>의료비 지원 시스템</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #1a6fd4;
+      --primary-dark: #1558ae;
+      --primary-light: #e8f1fb;
+      --success: #0d7a4e;
+      --success-bg: #e6f4ef;
+      --warning: #b45309;
+      --warning-bg: #fef3c7;
+      --danger: #c0392b;
+      --danger-bg: #fdecea;
+      --info: #0369a1;
+      --info-bg: #e0f2fe;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --radius: 8px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+    }
+
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-800);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* Header */
+    .header {
+      background: var(--primary);
+      color: white;
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-md);
+    }
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .header-logo svg { width: 28px; height: 28px; }
+    .header-nav { display: flex; gap: 4px; }
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.8);
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .nav-btn:hover { background: rgba(255,255,255,0.15); color: white; }
+    .nav-btn.active { background: rgba(255,255,255,0.2); color: white; }
+
+    /* Layout */
+    .container { max-width: 1280px; margin: 0 auto; padding: 32px 24px; }
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* Page Header */
+    .page-header { margin-bottom: 28px; }
+    .page-title { font-size: 24px; font-weight: 700; color: var(--gray-900); letter-spacing: -0.5px; }
+    .page-subtitle { font-size: 14px; color: var(--gray-500); margin-top: 4px; }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border-left: 4px solid transparent;
+    }
+    .stat-card.total { border-left-color: var(--primary); }
+    .stat-card.pending { border-left-color: var(--warning); }
+    .stat-card.reviewing { border-left-color: var(--info); }
+    .stat-card.approved { border-left-color: var(--success); }
+    .stat-card.rejected { border-left-color: var(--danger); }
+    .stat-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .stat-card.total .stat-icon { background: var(--primary-light); }
+    .stat-card.pending .stat-icon { background: var(--warning-bg); }
+    .stat-card.reviewing .stat-icon { background: var(--info-bg); }
+    .stat-card.approved .stat-icon { background: var(--success-bg); }
+    .stat-card.rejected .stat-icon { background: var(--danger-bg); }
+    .stat-label { font-size: 13px; color: var(--gray-500); font-weight: 500; }
+    .stat-value { font-size: 28px; font-weight: 700; color: var(--gray-900); line-height: 1.2; }
+
+    /* Card */
+    .card {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .card-title { font-size: 16px; font-weight: 600; color: var(--gray-900); }
+
+    /* Search & Filter */
+    .search-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .search-input {
+      padding: 8px 14px 8px 36px;
+      border: 1px solid var(--gray-300);
+      border-radius: 6px;
+      font-size: 14px;
+      width: 240px;
+      background: var(--gray-50);
+      position: relative;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .search-input:focus { border-color: var(--primary); background: white; }
+    .search-wrapper { position: relative; }
+    .search-icon {
+      position: absolute;
+      left: 10px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-400);
+      pointer-events: none;
+    }
+    .filter-select {
+      padding: 8px 12px;
+      border: 1px solid var(--gray-300);
+      border-radius: 6px;
+      font-size: 14px;
+      background: var(--gray-50);
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .filter-select:focus { border-color: var(--primary); background: white; }
+
+    /* Table */
+    .table-wrapper { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--gray-500);
+      background: var(--gray-50);
+      border-bottom: 1px solid var(--gray-200);
+      white-space: nowrap;
+    }
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--gray-100);
+      color: var(--gray-700);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tbody tr { transition: background 0.1s; }
+    tbody tr:hover { background: var(--gray-50); }
+    .table-empty { padding: 48px; text-align: center; color: var(--gray-400); font-size: 15px; }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .badge.pending { background: var(--warning-bg); color: var(--warning); }
+    .badge.pending .badge-dot { background: var(--warning); }
+    .badge.reviewing { background: var(--info-bg); color: var(--info); }
+    .badge.reviewing .badge-dot { background: var(--info); }
+    .badge.approved { background: var(--success-bg); color: var(--success); }
+    .badge.approved .badge-dot { background: var(--success); }
+    .badge.rejected { background: var(--danger-bg); color: var(--danger); }
+    .badge.rejected .badge-dot { background: var(--danger); }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 18px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn-sm { padding: 6px 12px; font-size: 13px; }
+    .btn-xs { padding: 4px 10px; font-size: 12px; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-secondary { background: var(--gray-100); color: var(--gray-700); }
+    .btn-secondary:hover { background: var(--gray-200); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: #0a6542; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: #a93226; }
+    .btn-warning { background: #d97706; color: white; }
+    .btn-warning:hover { background: #b45309; }
+    .btn-outline { background: transparent; border: 1px solid var(--gray-300); color: var(--gray-600); }
+    .btn-outline:hover { background: var(--gray-50); }
+
+    /* Form */
+    .form-section {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+    .form-section-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .form-section-icon {
+      width: 32px; height: 32px;
+      background: var(--primary-light);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--primary);
+      font-size: 16px;
+    }
+    .form-section-title { font-size: 15px; font-weight: 600; color: var(--gray-800); }
+    .form-section-body { padding: 24px; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+    @media (max-width: 768px) {
+      .form-grid, .form-grid-3 { grid-template-columns: 1fr; }
+    }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1 / -1; }
+    label { font-size: 13px; font-weight: 600; color: var(--gray-700); }
+    label .required { color: var(--danger); margin-left: 2px; }
+    input[type="text"], input[type="date"], input[type="tel"], input[type="number"],
+    select, textarea {
+      padding: 9px 12px;
+      border: 1px solid var(--gray-300);
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--gray-800);
+      background: white;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+      font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26,111,212,0.1);
+    }
+    input.error, select.error, textarea.error { border-color: var(--danger); }
+    .field-error { font-size: 12px; color: var(--danger); }
+    .field-hint { font-size: 12px; color: var(--gray-400); }
+    textarea { resize: vertical; min-height: 80px; }
+    .checkbox-group { display: flex; align-items: center; gap: 8px; }
+    .checkbox-group input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
+    .checkbox-group label { font-size: 14px; font-weight: 400; cursor: pointer; margin: 0; }
+
+    .form-divider { border: none; border-top: 1px solid var(--gray-200); margin: 24px 0; }
+
+    .form-actions {
+      display: flex; justify-content: flex-end; gap: 12px;
+      padding: 20px 24px;
+      background: var(--gray-50);
+      border-top: 1px solid var(--gray-200);
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+
+    /* Notice box */
+    .notice {
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 14px;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .notice.info { background: var(--info-bg); color: var(--info); }
+    .notice.warning { background: var(--warning-bg); color: var(--warning); }
+    .notice.success { background: var(--success-bg); color: var(--success); }
+    .notice.danger { background: var(--danger-bg); color: var(--danger); }
+    .notice-icon { flex-shrink: 0; font-size: 16px; }
+    .notice ul { margin: 6px 0 0 16px; }
+    .notice li { margin-bottom: 4px; }
+
+    /* Detail Modal */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: white;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 700px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      transform: scale(0.95);
+      transition: transform 0.2s;
+    }
+    .modal-overlay.open .modal { transform: scale(1); }
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; background: white; z-index: 1;
+    }
+    .modal-title { font-size: 18px; font-weight: 700; color: var(--gray-900); }
+    .modal-close {
+      background: var(--gray-100); border: none; cursor: pointer;
+      width: 32px; height: 32px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; color: var(--gray-500);
+      transition: background 0.1s;
+    }
+    .modal-close:hover { background: var(--gray-200); }
+    .modal-body { padding: 24px; }
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--gray-200);
+      display: flex; gap: 10px; justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    /* Detail grid */
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .detail-section-title {
+      font-size: 13px; font-weight: 600; color: var(--primary);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      grid-column: 1/-1;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--primary-light);
+      margin-top: 8px;
+    }
+    .detail-item { display: flex; flex-direction: column; gap: 3px; }
+    .detail-label { font-size: 12px; color: var(--gray-400); font-weight: 500; }
+    .detail-value { font-size: 14px; color: var(--gray-800); font-weight: 500; }
+    .detail-item.full { grid-column: 1/-1; }
+
+    /* Review panel */
+    .review-panel {
+      margin-top: 20px;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .review-panel-header {
+      padding: 12px 16px;
+      background: var(--gray-50);
+      font-size: 14px; font-weight: 600; color: var(--gray-700);
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .review-panel-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .review-status-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* Toast */
+    .toast-container {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      z-index: 999;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .toast {
+      background: var(--gray-900);
+      color: white;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      box-shadow: var(--shadow-lg);
+      display: flex; align-items: center; gap: 8px;
+      animation: slideIn 0.2s ease;
+      max-width: 320px;
+    }
+    .toast.success { background: var(--success); }
+    .toast.error { background: var(--danger); }
+    .toast.warning { background: #d97706; }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Amount display */
+    .amount { font-weight: 600; color: var(--gray-900); }
+    .amount-highlight { color: var(--primary); font-weight: 700; }
+
+    /* Loading */
+    .loading {
+      display: flex; align-items: center; justify-content: center;
+      padding: 48px; color: var(--gray-400);
+      gap: 8px; font-size: 15px;
+    }
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid var(--gray-200);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Pagination-like count */
+    .result-count { font-size: 13px; color: var(--gray-500); }
+
+    /* Action column */
+    .action-cell { display: flex; gap: 6px; white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+      </svg>
+      의료비 지원 시스템
+    </div>
+    <nav class="header-nav">
+      <button class="nav-btn active" onclick="showPage('apply')">신청하기</button>
+      <button class="nav-btn" onclick="showPage('status')">신청 조회</button>
+      <button class="nav-btn" onclick="showPage('admin')">관리자</button>
+    </nav>
+  </div>
+</header>
+
+<!-- Main -->
+<main class="container">
+
+  <!-- ======================== APPLY PAGE ======================== -->
+  <div id="page-apply" class="page active">
+    <div class="page-header">
+      <div class="page-title">의료비 지원 신청</div>
+      <div class="page-subtitle">중증질환 및 희귀질환 의료비 지원을 신청하실 수 있습니다.</div>
+    </div>
+
+    <div class="notice info">
+      <span class="notice-icon">ℹ️</span>
+      <div>
+        <strong>지원 안내</strong>
+        <ul>
+          <li>지원 대상: 암, 희귀질환, 중증 심장·뇌·외상질환 진단을 받은 환자</li>
+          <li>지원 범위: 건강보험 급여 항목 중 본인부담금의 일부 또는 전액</li>
+          <li>소득 기준: 가구 소득 기준 중위소득 120% 이하</li>
+          <li>신청 후 심사까지 약 2주 소요됩니다.</li>
+        </ul>
+      </div>
+    </div>
+
+    <form id="applyForm" novalidate>
+
+      <!-- 신청인 정보 -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <div class="form-section-icon">👤</div>
+          <div class="form-section-title">신청인 정보</div>
+        </div>
+        <div class="form-section-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>성명 <span class="required">*</span></label>
+              <input type="text" name="applicantName" placeholder="홍길동" />
+              <span class="field-error" id="err-applicantName"></span>
+            </div>
+            <div class="form-group">
+              <label>생년월일 <span class="required">*</span></label>
+              <input type="date" name="birthDate" />
+              <span class="field-error" id="err-birthDate"></span>
+            </div>
+            <div class="form-group">
+              <label>연락처 <span class="required">*</span></label>
+              <input type="tel" name="phone" placeholder="010-0000-0000" />
+              <span class="field-error" id="err-phone"></span>
+            </div>
+            <div class="form-group">
+              <label>주소 <span class="required">*</span></label>
+              <input type="text" name="address" placeholder="시/도, 시/군/구, 상세주소" />
+              <span class="field-error" id="err-address"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 환자 정보 -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <div class="form-section-icon">🏥</div>
+          <div class="form-section-title">환자 정보</div>
+        </div>
+        <div class="form-section-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>환자 성명 <span class="required">*</span></label>
+              <input type="text" name="patientName" placeholder="신청인과 동일한 경우 비워두세요" />
+            </div>
+            <div class="form-group">
+              <label>신청인과의 관계 <span class="required">*</span></label>
+              <select name="relationship">
+                <option value="self">본인</option>
+                <option value="spouse">배우자</option>
+                <option value="parent">부모</option>
+                <option value="child">자녀</option>
+                <option value="sibling">형제/자매</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>진료 병원 <span class="required">*</span></label>
+              <input type="text" name="hospitalName" placeholder="병원명 입력" />
+              <span class="field-error" id="err-hospitalName"></span>
+            </div>
+            <div class="form-group">
+              <label>질환 분류 <span class="required">*</span></label>
+              <select name="diseaseCategory">
+                <option value="">-- 선택 --</option>
+                <option value="암(악성신생물)">암(악성신생물)</option>
+                <option value="희귀질환">희귀질환</option>
+                <option value="중증 심장질환">중증 심장질환</option>
+                <option value="중증 뇌질환">중증 뇌질환</option>
+                <option value="중증 외상">중증 외상</option>
+                <option value="기타 중증질환">기타 중증질환</option>
+              </select>
+              <span class="field-error" id="err-diseaseCategory"></span>
+            </div>
+            <div class="form-group full">
+              <label>진단명 <span class="required">*</span></label>
+              <input type="text" name="diagnosisName" placeholder="예: 위암 2기, 희귀유전질환 등" />
+              <span class="field-error" id="err-diagnosisName"></span>
+            </div>
+            <div class="form-group">
+              <label>치료 시작일 <span class="required">*</span></label>
+              <input type="date" name="treatmentPeriodStart" />
+              <span class="field-error" id="err-treatmentPeriodStart"></span>
+            </div>
+            <div class="form-group">
+              <label>치료 종료일</label>
+              <input type="date" name="treatmentPeriodEnd" />
+              <span class="field-hint">치료 중인 경우 비워두세요</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 의료비 정보 -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <div class="form-section-icon">💰</div>
+          <div class="form-section-title">의료비 내역</div>
+        </div>
+        <div class="form-section-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>총 의료비 <span class="required">*</span></label>
+              <input type="number" name="totalMedicalCost" placeholder="0" min="0" step="1000" />
+              <span class="field-hint">원 단위로 입력 (예: 1250000)</span>
+              <span class="field-error" id="err-totalMedicalCost"></span>
+            </div>
+            <div class="form-group">
+              <label>건강보험 지원금</label>
+              <input type="number" name="insuranceCoverage" placeholder="0" min="0" step="1000" />
+              <span class="field-hint">건강보험에서 지원받은 금액</span>
+            </div>
+            <div class="form-group full">
+              <label>신청 지원금액 <span class="required">*</span></label>
+              <input type="number" name="requestedAmount" placeholder="0" min="0" step="1000" />
+              <span class="field-hint">본인 부담금 중 지원받고자 하는 금액</span>
+              <span class="field-error" id="err-requestedAmount"></span>
+            </div>
+          </div>
+
+          <hr class="form-divider" />
+
+          <div class="form-group">
+            <div class="checkbox-group">
+              <input type="checkbox" name="incomeCertified" id="incomeCertified" />
+              <label for="incomeCertified">가구 소득 기준 확인 (중위소득 120% 이하) 및 관련 서류 제출에 동의합니다.</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline" onclick="resetForm()">초기화</button>
+          <button type="submit" class="btn btn-primary">신청서 제출</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- ======================== STATUS PAGE ======================== -->
+  <div id="page-status" class="page">
+    <div class="page-header">
+      <div class="page-title">신청 현황 조회</div>
+      <div class="page-subtitle">제출한 의료비 지원 신청의 처리 현황을 확인합니다.</div>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-header">
+        <span class="card-title">신청 조회</span>
+        <div class="search-row">
+          <div class="search-wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input class="search-input" type="text" id="statusSearch" placeholder="이름, 진단명 검색..." oninput="loadStatus()" />
+          </div>
+          <select class="filter-select" id="statusFilter" onchange="loadStatus()">
+            <option value="all">전체 상태</option>
+            <option value="pending">접수 완료</option>
+            <option value="reviewing">심사 중</option>
+            <option value="approved">승인</option>
+            <option value="rejected">반려</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>신청인</th>
+              <th>진단명</th>
+              <th>병원</th>
+              <th>신청금액</th>
+              <th>신청일</th>
+              <th>상태</th>
+              <th>상세</th>
+            </tr>
+          </thead>
+          <tbody id="statusTableBody">
+            <tr><td colspan="7" class="table-empty">
+              <div class="loading"><div class="spinner"></div> 불러오는 중...</div>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== ADMIN PAGE ======================== -->
+  <div id="page-admin" class="page">
+    <div class="page-header">
+      <div class="page-title">관리자 심사 페이지</div>
+      <div class="page-subtitle">의료비 지원 신청 목록을 관리하고 심사 결과를 입력합니다.</div>
+    </div>
+
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card total">
+        <div class="stat-icon">📋</div>
+        <div>
+          <div class="stat-label">전체 신청</div>
+          <div class="stat-value" id="stat-total">-</div>
+        </div>
+      </div>
+      <div class="stat-card pending">
+        <div class="stat-icon">📥</div>
+        <div>
+          <div class="stat-label">접수 완료</div>
+          <div class="stat-value" id="stat-pending">-</div>
+        </div>
+      </div>
+      <div class="stat-card reviewing">
+        <div class="stat-icon">🔍</div>
+        <div>
+          <div class="stat-label">심사 중</div>
+          <div class="stat-value" id="stat-reviewing">-</div>
+        </div>
+      </div>
+      <div class="stat-card approved">
+        <div class="stat-icon">✅</div>
+        <div>
+          <div class="stat-label">승인</div>
+          <div class="stat-value" id="stat-approved">-</div>
+        </div>
+      </div>
+      <div class="stat-card rejected">
+        <div class="stat-icon">❌</div>
+        <div>
+          <div class="stat-label">반려</div>
+          <div class="stat-value" id="stat-rejected">-</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">신청 목록</span>
+        <div class="search-row">
+          <div class="search-wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input class="search-input" type="text" id="adminSearch" placeholder="이름, 진단명 검색..." oninput="loadAdmin()" />
+          </div>
+          <select class="filter-select" id="adminFilter" onchange="loadAdmin()">
+            <option value="all">전체 상태</option>
+            <option value="pending">접수 완료</option>
+            <option value="reviewing">심사 중</option>
+            <option value="approved">승인</option>
+            <option value="rejected">반려</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>신청인</th>
+              <th>진단명</th>
+              <th>병원</th>
+              <th>신청금액</th>
+              <th>신청일</th>
+              <th>소득확인</th>
+              <th>상태</th>
+              <th>관리</th>
+            </tr>
+          </thead>
+          <tbody id="adminTableBody">
+            <tr><td colspan="8" class="table-empty">
+              <div class="loading"><div class="spinner"></div> 불러오는 중...</div>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">신청 상세</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+  const API = '/api/applications';
+  let currentApp = null;
+  let isAdmin = false;
+
+  // ===================== Navigation =====================
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    event.currentTarget.classList.add('active');
+
+    if (name === 'status') loadStatus();
+    if (name === 'admin') loadAdmin();
+    isAdmin = (name === 'admin');
+  }
+
+  // ===================== Toast =====================
+  function showToast(message, type = '') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast' + (type ? ' ' + type : '');
+    toast.textContent = message;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 3500);
+  }
+
+  // ===================== Formatting =====================
+  function fmtAmount(n) {
+    return Number(n).toLocaleString('ko-KR') + '원';
+  }
+  function fmtDate(s) {
+    if (!s) return '-';
+    return new Date(s).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+  }
+  function fmtDatetime(s) {
+    if (!s) return '-';
+    return new Date(s).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+  }
+  function statusBadge(status, labels) {
+    const label = labels[status] || status;
+    return `<span class="badge ${status}"><span class="badge-dot"></span>${label}</span>`;
+  }
+
+  const RELATIONSHIP_LABELS = {
+    self: '본인', spouse: '배우자', parent: '부모', child: '자녀', sibling: '형제/자매'
+  };
+
+  // ===================== Apply Form =====================
+  document.getElementById('applyForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearErrors();
+
+    const form = e.target;
+    const data = Object.fromEntries(new FormData(form).entries());
+    data.incomeCertified = form.incomeCertified.checked;
+
+    // Validation
+    let hasError = false;
+    const required = {
+      applicantName: '성명을 입력하세요.',
+      birthDate: '생년월일을 입력하세요.',
+      phone: '연락처를 입력하세요.',
+      address: '주소를 입력하세요.',
+      hospitalName: '병원명을 입력하세요.',
+      diseaseCategory: '질환 분류를 선택하세요.',
+      diagnosisName: '진단명을 입력하세요.',
+      treatmentPeriodStart: '치료 시작일을 입력하세요.',
+      totalMedicalCost: '총 의료비를 입력하세요.',
+      requestedAmount: '신청 지원금액을 입력하세요.',
+    };
+    for (const [field, msg] of Object.entries(required)) {
+      if (!data[field]) {
+        document.getElementById('err-' + field).textContent = msg;
+        hasError = true;
+      }
+    }
+    if (hasError) { showToast('필수 항목을 모두 입력해주세요.', 'error'); return; }
+
+    // patientName fallback
+    if (!data.patientName) data.patientName = data.applicantName;
+
+    try {
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || '서버 오류');
+
+      showToast('신청이 완료되었습니다. 접수번호: ' + json.application.id.slice(0,8).toUpperCase(), 'success');
+      form.reset();
+      document.querySelector('.nav-btn[onclick*="status"]').click();
+    } catch (err) {
+      showToast('오류: ' + err.message, 'error');
+    }
+  });
+
+  function clearErrors() {
+    document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
+  }
+
+  function resetForm() {
+    document.getElementById('applyForm').reset();
+    clearErrors();
+  }
+
+  // ===================== Status Page =====================
+  async function loadStatus() {
+    const search = document.getElementById('statusSearch').value;
+    const status = document.getElementById('statusFilter').value;
+    const tbody = document.getElementById('statusTableBody');
+    tbody.innerHTML = '<tr><td colspan="7" class="table-empty"><div class="loading"><div class="spinner"></div> 불러오는 중...</div></td></tr>';
+
+    try {
+      const params = new URLSearchParams();
+      if (search) params.set('search', search);
+      if (status !== 'all') params.set('status', status);
+      const res = await fetch(API + '?' + params);
+      const json = await res.json();
+
+      if (!json.applications.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="table-empty">검색 결과가 없습니다.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = json.applications.map(a => `
+        <tr>
+          <td><strong>${a.applicantName}</strong></td>
+          <td>${a.diagnosisName}</td>
+          <td>${a.hospitalName}</td>
+          <td class="amount">${fmtAmount(a.requestedAmount)}</td>
+          <td>${fmtDate(a.appliedAt)}</td>
+          <td>${statusBadge(a.status, json.statusLabels)}</td>
+          <td>
+            <button class="btn btn-sm btn-outline" onclick="openDetail('${a.id}', false)">상세보기</button>
+          </td>
+        </tr>
+      `).join('');
+    } catch (err) {
+      tbody.innerHTML = '<tr><td colspan="7" class="table-empty">데이터를 불러오지 못했습니다.</td></tr>';
+    }
+  }
+
+  // ===================== Admin Page =====================
+  async function loadAdmin() {
+    const search = document.getElementById('adminSearch').value;
+    const status = document.getElementById('adminFilter').value;
+    const tbody = document.getElementById('adminTableBody');
+    tbody.innerHTML = '<tr><td colspan="8" class="table-empty"><div class="loading"><div class="spinner"></div> 불러오는 중...</div></td></tr>';
+
+    try {
+      const params = new URLSearchParams();
+      if (search) params.set('search', search);
+      if (status !== 'all') params.set('status', status);
+      const res = await fetch(API + '?' + params);
+      const json = await res.json();
+
+      // Update stats
+      const s = json.stats;
+      document.getElementById('stat-total').textContent = s.total;
+      document.getElementById('stat-pending').textContent = s.pending;
+      document.getElementById('stat-reviewing').textContent = s.reviewing;
+      document.getElementById('stat-approved').textContent = s.approved;
+      document.getElementById('stat-rejected').textContent = s.rejected;
+
+      if (!json.applications.length) {
+        tbody.innerHTML = '<tr><td colspan="8" class="table-empty">검색 결과가 없습니다.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = json.applications.map(a => `
+        <tr>
+          <td><strong>${a.applicantName}</strong></td>
+          <td>${a.diagnosisName}</td>
+          <td>${a.hospitalName}</td>
+          <td class="amount">${fmtAmount(a.requestedAmount)}</td>
+          <td>${fmtDate(a.appliedAt)}</td>
+          <td>${a.incomeCertified ? '✅' : '❌'}</td>
+          <td>${statusBadge(a.status, json.statusLabels)}</td>
+          <td>
+            <div class="action-cell">
+              <button class="btn btn-xs btn-primary" onclick="openDetail('${a.id}', true)">심사</button>
+              <button class="btn btn-xs btn-danger" onclick="deleteApp('${a.id}')">삭제</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    } catch (err) {
+      tbody.innerHTML = '<tr><td colspan="8" class="table-empty">데이터를 불러오지 못했습니다.</td></tr>';
+    }
+  }
+
+  // ===================== Modal =====================
+  async function openDetail(id, adminMode) {
+    try {
+      const res = await fetch(API + '/' + id);
+      const json = await res.json();
+      const a = json.application;
+      const labels = json.statusLabels;
+      currentApp = a;
+
+      document.getElementById('modalTitle').textContent = '신청 상세 — ' + a.applicantName;
+
+      const selfPay = a.totalMedicalCost - a.insuranceCoverage;
+
+      document.getElementById('modalBody').innerHTML = `
+        <div class="detail-grid">
+
+          <div class="detail-section-title">신청인 정보</div>
+          <div class="detail-item"><div class="detail-label">성명</div><div class="detail-value">${a.applicantName}</div></div>
+          <div class="detail-item"><div class="detail-label">생년월일</div><div class="detail-value">${fmtDate(a.birthDate)}</div></div>
+          <div class="detail-item"><div class="detail-label">연락처</div><div class="detail-value">${a.phone}</div></div>
+          <div class="detail-item"><div class="detail-label">소득 기준 확인</div><div class="detail-value">${a.incomeCertified ? '✅ 확인됨' : '❌ 미확인'}</div></div>
+          <div class="detail-item full"><div class="detail-label">주소</div><div class="detail-value">${a.address}</div></div>
+
+          <div class="detail-section-title">환자·진료 정보</div>
+          <div class="detail-item"><div class="detail-label">환자명</div><div class="detail-value">${a.patientName}</div></div>
+          <div class="detail-item"><div class="detail-label">관계</div><div class="detail-value">${RELATIONSHIP_LABELS[a.relationship] || a.relationship}</div></div>
+          <div class="detail-item"><div class="detail-label">진료 병원</div><div class="detail-value">${a.hospitalName}</div></div>
+          <div class="detail-item"><div class="detail-label">질환 분류</div><div class="detail-value">${a.diseaseCategory}</div></div>
+          <div class="detail-item full"><div class="detail-label">진단명</div><div class="detail-value">${a.diagnosisName}</div></div>
+          <div class="detail-item"><div class="detail-label">치료 기간 (시작)</div><div class="detail-value">${fmtDate(a.treatmentPeriodStart)}</div></div>
+          <div class="detail-item"><div class="detail-label">치료 기간 (종료)</div><div class="detail-value">${fmtDate(a.treatmentPeriodEnd)}</div></div>
+
+          <div class="detail-section-title">의료비 내역</div>
+          <div class="detail-item"><div class="detail-label">총 의료비</div><div class="detail-value">${fmtAmount(a.totalMedicalCost)}</div></div>
+          <div class="detail-item"><div class="detail-label">건강보험 지원금</div><div class="detail-value">${fmtAmount(a.insuranceCoverage)}</div></div>
+          <div class="detail-item"><div class="detail-label">본인부담금</div><div class="detail-value">${fmtAmount(selfPay)}</div></div>
+          <div class="detail-item"><div class="detail-label">신청 지원금액</div><div class="detail-value amount-highlight">${fmtAmount(a.requestedAmount)}</div></div>
+
+          <div class="detail-section-title">심사 정보</div>
+          <div class="detail-item"><div class="detail-label">현재 상태</div><div class="detail-value">${statusBadge(a.status, labels)}</div></div>
+          <div class="detail-item"><div class="detail-label">신청일</div><div class="detail-value">${fmtDatetime(a.appliedAt)}</div></div>
+          <div class="detail-item full"><div class="detail-label">심사 의견</div><div class="detail-value">${a.reviewComment || '—'}</div></div>
+        </div>
+
+        ${adminMode ? `
+        <div class="review-panel">
+          <div class="review-panel-header">🖊 심사 처리</div>
+          <div class="review-panel-body">
+            <div class="review-status-row">
+              <button class="btn btn-sm btn-warning" onclick="updateStatus('${a.id}', 'reviewing')">심사 중으로 변경</button>
+              <button class="btn btn-sm btn-success" onclick="updateStatus('${a.id}', 'approved')">승인</button>
+              <button class="btn btn-sm btn-danger" onclick="updateStatus('${a.id}', 'rejected')">반려</button>
+            </div>
+            <div class="form-group">
+              <label>심사 의견</label>
+              <textarea id="reviewComment" rows="3" placeholder="심사 의견을 입력하세요...">${a.reviewComment || ''}</textarea>
+            </div>
+          </div>
+        </div>
+        ` : ''}
+      `;
+
+      document.getElementById('modalFooter').innerHTML = `
+        <button class="btn btn-outline" onclick="closeModal()">닫기</button>
+      `;
+
+      document.getElementById('detailModal').classList.add('open');
+    } catch (err) {
+      showToast('상세 정보를 불러오지 못했습니다.', 'error');
+    }
+  }
+
+  function closeModal() {
+    document.getElementById('detailModal').classList.remove('open');
+    currentApp = null;
+  }
+
+  document.getElementById('detailModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeModal();
+  });
+
+  // ===================== Status Update =====================
+  async function updateStatus(id, status) {
+    const comment = document.getElementById('reviewComment')?.value || '';
+    try {
+      const res = await fetch(API + '/' + id + '/status', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status, reviewComment: comment }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error);
+      const statusNames = { reviewing: '심사 중', approved: '승인', rejected: '반려' };
+      showToast('상태가 [' + (statusNames[status] || status) + ']으로 변경되었습니다.', 'success');
+      closeModal();
+      loadAdmin();
+    } catch (err) {
+      showToast('오류: ' + err.message, 'error');
+    }
+  }
+
+  // ===================== Delete =====================
+  async function deleteApp(id) {
+    if (!confirm('이 신청 내역을 삭제하시겠습니까?')) return;
+    try {
+      const res = await fetch(API + '/' + id, { method: 'DELETE' });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error);
+      showToast('삭제되었습니다.', 'success');
+      loadAdmin();
+    } catch (err) {
+      showToast('오류: ' + err.message, 'error');
+    }
+  }
+
+  // Initial load
+  loadStatus();
+</script>
+</body>
+</html>
