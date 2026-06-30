@@ -603,26 +603,6 @@ const DEPTS=['생산1팀','경영지원팀','품질보증팀','안전환경팀',
 
 function rid(){return Math.random().toString(36).slice(2,10).toUpperCase()}
 
-// ── Seed (fallback / demo) ──
-function seedData(){
-  const mk=(employeeName,employeeId,factory,department,relation,hospitalName,diagnosisName,treatmentDate,totalCost,insuranceCoverage,requestedAmount,status,reviewComment,appliedAt)=>
-    ({id:rid(),employeeName,employeeId,factory,department,relation,hospitalName,diagnosisName,treatmentDate,totalCost,insuranceCoverage,requestedAmount,status,reviewComment,appliedAt});
-  return [
-    mk('김도현','2018-0231','울산공장','생산1팀','self','울산대학교병원','급성 충수염','2026-01-12',3200000,2000000,1200000,'approved','증빙 확인, 승인','2026-01-14T09:00:00Z'),
-    mk('이수민','2020-0418','울산공장','안전환경팀','child','서울아산병원','폐렴','2026-02-08',4100000,2600000,1500000,'approved','승인 완료','2026-02-10T10:00:00Z'),
-    mk('박준영','2016-0102','울산공장','품질보증팀','spouse','부산백병원','디스크 수술','2026-06-03',9800000,5000000,4800000,'reviewing','','2026-06-05T11:00:00Z'),
-    mk('최은지','2021-0457','인천공장','경영지원팀','self','인하대병원','갑상선 결절','2026-03-19',2600000,1400000,1200000,'approved','승인','2026-03-21T09:30:00Z'),
-    mk('정민수','2019-0333','인천공장','생산1팀','parent','가천대길병원','백내장 수술','2026-05-22',2150000,900000,1250000,'reviewing','','2026-05-24T14:00:00Z'),
-    mk('한지원','2022-0511','인천공장','연구개발팀','self','세브란스병원','위내시경 용종 제거','2026-06-11',1900000,700000,1200000,'pending','','2026-06-12T08:30:00Z'),
-    mk('오세훈','2017-0288','대전공장','생산1팀','child','충남대병원','중이염','2026-04-02',1400000,600000,800000,'rejected','증빙 미비로 반려','2026-04-04T13:00:00Z'),
-    mk('서아름','2020-0399','대전공장','품질보증팀','self','건양대병원','고관절 골절','2026-06-18',6200000,3400000,2800000,'reviewing','','2026-06-19T10:15:00Z'),
-    mk('강태경','2015-0077','대전공장','경영지원팀','spouse','대전성모병원','담낭절제술','2026-05-09',4300000,2400000,1900000,'approved','승인','2026-05-12T09:00:00Z'),
-    mk('윤서현','2021-0466','여수공장','연구개발팀','self','여수전남병원','족부 인대 수술','2026-06-21',3050000,1500000,1550000,'reviewing','','2026-06-23T11:30:00Z'),
-    mk('임현우','2019-0341','여수공장','안전환경팀','parent','순천성가롤로병원','관상동맥 시술','2026-06-25',5400000,3200000,2200000,'pending','','2026-06-26T09:00:00Z'),
-    mk('노유진','2022-0508','여수공장','생산1팀','child','여수한국병원','편도 절제술','2026-06-28',1600000,900000,700000,'pending','','2026-06-29T15:00:00Z'),
-  ];
-}
-
 // ── Data layer ──
 const COL = firestoreOk ? collection(db,'medicalApplications') : null;
 let cache=[];
@@ -634,13 +614,12 @@ async function loadAll(){
   if(firestoreOk){
     try{
       const snap=await getDocs(query(COL,orderBy('appliedAt','desc')));
-      const rows=snap.docs.map(d=>{const data=d.data();return {id:d.id,...data,appliedAt:toISO(data.appliedAt)}});
-      cache = rows.length ? rows : seedData();
-      window.__demo = rows.length===0;
+      cache=snap.docs.map(d=>{const data=d.data();return {id:d.id,...data,appliedAt:toISO(data.appliedAt)}});
+      window.__demo=false;
     }catch(e){
-      cache=seedData(); window.__demo=true;
+      cache=[]; window.__demo=false; window.__loadError=true;
     }
-  } else { cache=seedData(); window.__demo=true; }
+  } else { cache=[]; window.__demo=false; }
   cache.sort((a,b)=>toMillis(b.appliedAt)-toMillis(a.appliedAt));
   return cache;
 }
@@ -799,7 +778,7 @@ document.getElementById('modal').addEventListener('click',e=>{if(e.target===e.cu
 window.setStatus=async function(id,status){
   const comment=document.getElementById('rv-comment')?.value||'';
   try{
-    if(firestoreOk && !window.__demo){
+    if(firestoreOk){
       await updateDoc(doc(db,'medicalApplications',id),{status,reviewComment:comment,updatedAt:serverTimestamp()});
     } else {
       const a=cache.find(x=>x.id===id); if(a){a.status=status;a.reviewComment=comment;}
@@ -832,7 +811,7 @@ document.getElementById('applyForm').addEventListener('submit',async e=>{
   };
   try{
     let newId=rid();
-    if(firestoreOk && !window.__demo){
+    if(firestoreOk){
       const ref=await addDoc(COL,{...rec,appliedAt:serverTimestamp(),updatedAt:serverTimestamp()});
       newId=ref.id;
     } else {
@@ -867,7 +846,7 @@ window.setViewport=function(mode){
 (async()=>{
   await loadAll();
   renderDashboard();
-  if(window.__demo) toast('데모 데이터로 표시 중입니다. Firestore 연결 시 실데이터가 반영됩니다.','warn');
+  if(window.__loadError) toast('데이터를 불러오지 못했습니다. Firestore 설정을 확인해주세요.','err');
 })();
 </script>
 </body>
