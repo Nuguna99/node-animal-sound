@@ -3,213 +3,224 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>의료비 지원 시스템</title>
+  <title>의료비 지원 시스템 | 신청 · 검수 · 현황</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --primary: #1a6fd4;
-      --primary-dark: #1558ae;
-      --primary-light: #e8f1fb;
-      --success: #0d7a4e;
-      --success-bg: #e6f4ef;
-      --warning: #b45309;
-      --warning-bg: #fef3c7;
-      --danger: #c0392b;
-      --danger-bg: #fdecea;
-      --info: #0369a1;
-      --info-bg: #e0f2fe;
-      --gray-50: #f9fafb;
-      --gray-100: #f3f4f6;
-      --gray-200: #e5e7eb;
-      --gray-300: #d1d5db;
-      --gray-400: #9ca3af;
-      --gray-500: #6b7280;
-      --gray-600: #4b5563;
-      --gray-700: #374151;
-      --gray-800: #1f2937;
-      --gray-900: #111827;
-      --radius: 8px;
-      --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+      /* ── Hanwha-inspired palette ───────────────────── */
+      --primary: #FF6600;          /* 한화 오렌지 */
+      --primary-dark: #E25500;
+      --primary-darker: #C44900;
+      --primary-light: #FFF1E6;
+      --primary-soft: #FFE3CC;
+
+      --ink-900: #1A1A1A;          /* 다크 배경 */
+      --ink-850: #222222;
+      --ink-800: #2B2B2B;
+      --ink-700: #333333;
+
+      --success: #1B8A5A;
+      --success-bg: #E6F5EE;
+      --warning: #C77700;
+      --warning-bg: #FFF4E0;
+      --info: #2563EB;
+      --info-bg: #E8F0FE;
+      --danger: #D33A2C;
+      --danger-bg: #FCEBE9;
+      --urgent: #B91C1C;
+
+      --gray-50: #FAFAFA;
+      --gray-100: #F4F4F5;
+      --gray-200: #E7E7EA;
+      --gray-300: #D4D4D8;
+      --gray-400: #A1A1AA;
+      --gray-500: #71717A;
+      --gray-600: #52525B;
+      --gray-700: #3F3F46;
+      --gray-800: #27272A;
+      --gray-900: #18181B;
+
+      --radius: 10px;
+      --radius-lg: 14px;
+      --shadow-xs: 0 1px 2px rgba(24,24,27,0.06);
+      --shadow: 0 1px 3px rgba(24,24,27,0.08), 0 1px 2px rgba(24,24,27,0.04);
+      --shadow-md: 0 4px 10px -2px rgba(24,24,27,0.10), 0 2px 6px -2px rgba(24,24,27,0.06);
+      --shadow-lg: 0 16px 32px -8px rgba(24,24,27,0.18);
+      --ring: 0 0 0 3px rgba(255,102,0,0.16);
     }
 
+    html { scroll-behavior: smooth; }
     body {
-      font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: var(--gray-50);
-      color: var(--gray-800);
+      color: var(--ink-800);
       min-height: 100vh;
-      line-height: 1.5;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
     }
 
+    /* ── Header (dark + orange accent) ───────────────── */
     .header {
-      background: var(--primary);
-      color: white;
-      padding: 0 24px;
+      background: var(--ink-900);
+      color: #fff;
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: var(--shadow-md);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.06), var(--shadow-md);
+    }
+    .header::after {
+      content: ""; display: block; height: 3px;
+      background: linear-gradient(90deg, var(--primary) 0%, #FF9248 60%, transparent 100%);
     }
     .header-inner {
-      max-width: 1280px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 60px;
+      max-width: 1320px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px; padding: 0 28px;
     }
-    .header-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark {
+      width: 36px; height: 36px; border-radius: 9px;
+      background: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(255,102,0,0.4);
     }
-    .header-logo svg { width: 28px; height: 28px; }
-    .header-nav { display: flex; gap: 4px; }
+    .brand-mark svg { width: 22px; height: 22px; color: #fff; }
+    .brand-text { display: flex; flex-direction: column; line-height: 1.15; }
+    .brand-title { font-size: 17px; font-weight: 800; letter-spacing: -0.4px; }
+    .brand-sub { font-size: 11px; color: var(--gray-400); font-weight: 500; letter-spacing: 0.3px; }
+
+    .header-nav { display: flex; gap: 2px; }
     .nav-btn {
-      background: transparent;
-      border: none;
-      color: rgba(255,255,255,0.8);
-      padding: 8px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 500;
-      transition: all 0.15s;
+      position: relative;
+      background: transparent; border: none;
+      color: rgba(255,255,255,0.62);
+      padding: 9px 16px; border-radius: 8px;
+      cursor: pointer; font-size: 14px; font-weight: 600;
+      transition: color 0.15s, background 0.15s;
+      font-family: inherit;
     }
-    .nav-btn:hover { background: rgba(255,255,255,0.15); color: white; }
-    .nav-btn.active { background: rgba(255,255,255,0.2); color: white; }
+    .nav-btn:hover { color: #fff; background: rgba(255,255,255,0.08); }
+    .nav-btn.active { color: #fff; }
+    .nav-btn.active::after {
+      content: ""; position: absolute; left: 16px; right: 16px; bottom: -2px;
+      height: 3px; background: var(--primary); border-radius: 3px 3px 0 0;
+    }
+    .header-user { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--gray-300); }
+    .avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-darker));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: #fff;
+    }
+    .hide-sm { }
 
-    .container { max-width: 1280px; margin: 0 auto; padding: 32px 24px; }
-    .page { display: none; }
+    .container { max-width: 1320px; margin: 0 auto; padding: 32px 28px 64px; }
+    .page { display: none; animation: fadeUp 0.25s ease; }
     .page.active { display: block; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-    .page-header { margin-bottom: 28px; }
-    .page-title { font-size: 24px; font-weight: 700; color: var(--gray-900); letter-spacing: -0.5px; }
-    .page-subtitle { font-size: 14px; color: var(--gray-500); margin-top: 4px; }
+    .page-header { margin-bottom: 26px; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .page-title { font-size: 26px; font-weight: 800; color: var(--ink-900); letter-spacing: -0.6px; display: flex; align-items: center; gap: 10px; }
+    .page-title .tick { width: 5px; height: 26px; border-radius: 3px; background: var(--primary); display: inline-block; }
+    .page-subtitle { font-size: 14px; color: var(--gray-500); margin-top: 6px; padding-left: 15px; }
 
+    /* ── Stat cards ──────────────────────────────────── */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 28px;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 16px; margin-bottom: 26px;
     }
     .stat-card {
-      background: white;
-      border-radius: var(--radius);
-      padding: 20px 24px;
-      box-shadow: var(--shadow);
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      border-left: 4px solid transparent;
+      background: #fff; border-radius: var(--radius);
+      padding: 18px 20px; box-shadow: var(--shadow);
+      border: 1px solid var(--gray-200);
+      display: flex; align-items: center; gap: 15px;
+      position: relative; overflow: hidden;
     }
-    .stat-card.total { border-left-color: var(--primary); }
-    .stat-card.pending { border-left-color: var(--warning); }
-    .stat-card.reviewing { border-left-color: var(--info); }
-    .stat-card.approved { border-left-color: var(--success); }
-    .stat-card.rejected { border-left-color: var(--danger); }
+    .stat-card::before {
+      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+      background: var(--gray-300);
+    }
+    .stat-card.total::before { background: var(--primary); }
+    .stat-card.pending::before { background: var(--gray-400); }
+    .stat-card.reviewing::before { background: var(--info); }
+    .stat-card.approved::before { background: var(--success); }
+    .stat-card.rejected::before { background: var(--danger); }
     .stat-icon {
-      width: 44px; height: 44px;
-      border-radius: 10px;
+      width: 46px; height: 46px; border-radius: 11px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
+      font-size: 21px; flex-shrink: 0;
     }
     .stat-card.total .stat-icon { background: var(--primary-light); }
-    .stat-card.pending .stat-icon { background: var(--warning-bg); }
+    .stat-card.pending .stat-icon { background: var(--gray-100); }
     .stat-card.reviewing .stat-icon { background: var(--info-bg); }
     .stat-card.approved .stat-icon { background: var(--success-bg); }
     .stat-card.rejected .stat-icon { background: var(--danger-bg); }
-    .stat-label { font-size: 13px; color: var(--gray-500); font-weight: 500; }
-    .stat-value { font-size: 28px; font-weight: 700; color: var(--gray-900); line-height: 1.2; }
+    .stat-label { font-size: 13px; color: var(--gray-500); font-weight: 600; }
+    .stat-value { font-size: 27px; font-weight: 800; color: var(--ink-900); line-height: 1.2; letter-spacing: -0.5px; }
+    .stat-sub { font-size: 12px; color: var(--gray-400); font-weight: 500; }
 
-    .card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    /* ── Cards ───────────────────────────────────────── */
+    .card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--gray-200); overflow: hidden; }
+    .card + .card { margin-top: 20px; }
     .card-header {
-      padding: 16px 24px;
-      border-bottom: 1px solid var(--gray-200);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
+      padding: 16px 22px; border-bottom: 1px solid var(--gray-200);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
     }
-    .card-title { font-size: 16px; font-weight: 600; color: var(--gray-900); }
+    .card-title { font-size: 16px; font-weight: 700; color: var(--ink-900); display: flex; align-items: center; gap: 8px; }
+    .card-title .count-pill { font-size: 12px; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 9px; border-radius: 99px; }
+    .card-body { padding: 22px; }
 
-    .search-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-    .search-input {
-      padding: 8px 14px 8px 36px;
-      border: 1px solid var(--gray-300);
-      border-radius: 6px;
-      font-size: 14px;
-      width: 240px;
-      background: var(--gray-50);
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    .search-input:focus { border-color: var(--primary); background: white; }
+    /* ── Search / filter ─────────────────────────────── */
+    .toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
     .search-wrapper { position: relative; }
-    .search-icon {
-      position: absolute;
-      left: 10px; top: 50%;
-      transform: translateY(-50%);
-      color: var(--gray-400);
-      pointer-events: none;
+    .search-input {
+      padding: 9px 14px 9px 38px;
+      border: 1px solid var(--gray-300); border-radius: 8px;
+      font-size: 14px; width: 230px; background: var(--gray-50);
+      outline: none; transition: border-color 0.15s, box-shadow 0.15s; font-family: inherit;
     }
+    .search-input:focus { border-color: var(--primary); background: #fff; box-shadow: var(--ring); }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--gray-400); pointer-events: none; }
     .filter-select {
-      padding: 8px 12px;
-      border: 1px solid var(--gray-300);
-      border-radius: 6px;
-      font-size: 14px;
-      background: var(--gray-50);
-      outline: none;
-      cursor: pointer;
-      transition: border-color 0.15s;
+      padding: 9px 12px; border: 1px solid var(--gray-300); border-radius: 8px;
+      font-size: 14px; background: var(--gray-50); outline: none; cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s; font-family: inherit; color: var(--ink-700);
     }
-    .filter-select:focus { border-color: var(--primary); background: white; }
+    .filter-select:focus { border-color: var(--primary); background: #fff; box-shadow: var(--ring); }
+    /* keep toolbar controls compact (override the generic full-width form rule) */
+    .toolbar .filter-select { width: auto; min-width: 128px; }
+    .toolbar .search-input { width: 230px; }
 
+    /* ── Table ───────────────────────────────────────── */
     .table-wrapper { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 14px; }
     th {
-      padding: 12px 16px;
-      text-align: left;
-      font-weight: 600;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--gray-500);
-      background: var(--gray-50);
-      border-bottom: 1px solid var(--gray-200);
-      white-space: nowrap;
+      padding: 12px 18px; text-align: left; font-weight: 700; font-size: 12px;
+      letter-spacing: 0.3px; color: var(--gray-500); background: var(--gray-50);
+      border-bottom: 1px solid var(--gray-200); white-space: nowrap;
     }
-    td {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--gray-100);
-      color: var(--gray-700);
-      vertical-align: middle;
-    }
+    th.sortable { cursor: pointer; user-select: none; }
+    th.sortable:hover { color: var(--primary); }
+    th .sort-arrow { font-size: 10px; opacity: 0.55; }
+    td { padding: 14px 18px; border-bottom: 1px solid var(--gray-100); color: var(--gray-700); vertical-align: middle; }
     tr:last-child td { border-bottom: none; }
     tbody tr { transition: background 0.1s; }
-    tbody tr:hover { background: var(--gray-50); }
-    .table-empty { padding: 48px; text-align: center; color: var(--gray-400); font-size: 15px; }
+    tbody tr:hover { background: var(--primary-light); }
+    .table-empty { padding: 56px; text-align: center; color: var(--gray-400); font-size: 15px; }
+    .cell-strong { font-weight: 700; color: var(--ink-900); }
+    .cell-muted { color: var(--gray-500); font-size: 13px; }
 
+    /* ── Badges & chips ──────────────────────────────── */
     .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 3px 10px;
-      border-radius: 99px;
-      font-size: 12px;
-      font-weight: 600;
-      white-space: nowrap;
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 99px; font-size: 12px; font-weight: 700; white-space: nowrap;
     }
     .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
-    .badge.pending { background: var(--warning-bg); color: var(--warning); }
-    .badge.pending .badge-dot { background: var(--warning); }
+    .badge.pending { background: var(--gray-100); color: var(--gray-600); }
+    .badge.pending .badge-dot { background: var(--gray-500); }
     .badge.reviewing { background: var(--info-bg); color: var(--info); }
     .badge.reviewing .badge-dot { background: var(--info); }
     .badge.approved { background: var(--success-bg); color: var(--success); }
@@ -217,305 +228,366 @@
     .badge.rejected { background: var(--danger-bg); color: var(--danger); }
     .badge.rejected .badge-dot { background: var(--danger); }
 
+    .chip { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 6px; background: var(--gray-100); color: var(--gray-600); }
+    .prio { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; }
+    .prio.urgent { color: var(--urgent); }
+    .prio.high { color: var(--primary); }
+    .prio.normal { color: var(--gray-400); }
+
+    /* ── Buttons ─────────────────────────────────────── */
     .btn {
       display: inline-flex; align-items: center; gap: 6px;
-      padding: 9px 18px;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      border: none;
-      transition: all 0.15s;
-      white-space: nowrap;
+      padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 600;
+      cursor: pointer; border: 1px solid transparent; transition: all 0.15s; white-space: nowrap; font-family: inherit;
     }
-    .btn-sm { padding: 6px 12px; font-size: 13px; }
-    .btn-xs { padding: 4px 10px; font-size: 12px; }
-    .btn-primary { background: var(--primary); color: white; }
+    .btn:active { transform: translateY(1px); }
+    .btn-sm { padding: 7px 13px; font-size: 13px; }
+    .btn-xs { padding: 5px 11px; font-size: 12px; }
+    .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 2px 6px rgba(255,102,0,0.28); }
     .btn-primary:hover { background: var(--primary-dark); }
     .btn-secondary { background: var(--gray-100); color: var(--gray-700); }
     .btn-secondary:hover { background: var(--gray-200); }
-    .btn-success { background: var(--success); color: white; }
-    .btn-success:hover { background: #0a6542; }
-    .btn-danger { background: var(--danger); color: white; }
-    .btn-danger:hover { background: #a93226; }
-    .btn-warning { background: #d97706; color: white; }
-    .btn-warning:hover { background: #b45309; }
-    .btn-outline { background: transparent; border: 1px solid var(--gray-300); color: var(--gray-600); }
-    .btn-outline:hover { background: var(--gray-50); }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-success:hover { background: #156f49; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover { background: #b62f23; }
+    .btn-warning { background: var(--warning); color: #fff; }
+    .btn-warning:hover { background: #a86400; }
+    .btn-outline { background: #fff; border-color: var(--gray-300); color: var(--gray-700); }
+    .btn-outline:hover { background: var(--gray-50); border-color: var(--gray-400); }
+    .btn-ghost { background: transparent; color: var(--gray-600); }
+    .btn-ghost:hover { background: var(--gray-100); }
 
-    .form-section {
-      background: white;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      margin-bottom: 24px;
+    /* ── Form ────────────────────────────────────────── */
+    .progress-steps {
+      display: flex; align-items: center; gap: 0; margin-bottom: 24px;
+      background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius);
+      padding: 16px 22px; box-shadow: var(--shadow);
     }
-    .form-section-header {
-      padding: 16px 24px;
-      border-bottom: 1px solid var(--gray-200);
-      display: flex; align-items: center; gap: 10px;
-    }
-    .form-section-icon {
-      width: 32px; height: 32px;
-      background: var(--primary-light);
-      border-radius: 8px;
+    .pstep { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+    .pstep-num {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      color: var(--primary);
-      font-size: 16px;
+      font-size: 13px; font-weight: 700;
+      background: var(--gray-100); color: var(--gray-500); border: 2px solid var(--gray-200);
+      transition: all 0.2s;
     }
-    .form-section-title { font-size: 15px; font-weight: 600; color: var(--gray-800); }
-    .form-section-body { padding: 24px; }
+    .pstep.done .pstep-num { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .pstep.active .pstep-num { background: #fff; color: var(--primary); border-color: var(--primary); box-shadow: var(--ring); }
+    .pstep-label { font-size: 13px; font-weight: 600; color: var(--gray-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pstep.done .pstep-label, .pstep.active .pstep-label { color: var(--ink-800); }
+    .pstep-line { flex: 1; height: 2px; background: var(--gray-200); margin: 0 6px; border-radius: 2px; min-width: 16px; }
+    .pstep.done + .pstep-connector { }
 
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
+    .form-section { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--gray-200); margin-bottom: 20px; overflow: hidden; }
+    .form-section-header { padding: 16px 22px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; gap: 12px; background: linear-gradient(0deg, var(--gray-50), #fff); }
+    .form-section-icon { width: 34px; height: 34px; background: var(--primary-light); border-radius: 9px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 17px; }
+    .form-section-title { font-size: 15px; font-weight: 700; color: var(--ink-900); }
+    .form-section-step { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--gray-400); }
+    .form-section-body { padding: 22px; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .form-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 820px) { .form-grid, .form-grid.cols-3 { grid-template-columns: 1fr; } }
     .form-group { display: flex; flex-direction: column; gap: 6px; }
     .form-group.full { grid-column: 1 / -1; }
-    label { font-size: 13px; font-weight: 600; color: var(--gray-700); }
-    label .required { color: var(--danger); margin-left: 2px; }
-    input[type="text"], input[type="date"], input[type="tel"], input[type="number"],
-    select, textarea {
-      padding: 9px 12px;
-      border: 1px solid var(--gray-300);
-      border-radius: 6px;
-      font-size: 14px;
-      color: var(--gray-800);
-      background: white;
-      transition: border-color 0.15s, box-shadow 0.15s;
-      outline: none;
-      font-family: inherit;
+    label { font-size: 13px; font-weight: 700; color: var(--gray-700); }
+    label .required { color: var(--primary); margin-left: 2px; }
+    label .opt { color: var(--gray-400); font-weight: 500; margin-left: 4px; font-size: 12px; }
+    input[type="text"], input[type="date"], input[type="tel"], input[type="number"], select, textarea {
+      padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 8px;
+      font-size: 14px; color: var(--ink-800); background: #fff;
+      transition: border-color 0.15s, box-shadow 0.15s; outline: none; font-family: inherit; width: 100%;
     }
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(26,111,212,0.1);
-    }
-    .field-error { font-size: 12px; color: var(--danger); }
+    input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: var(--ring); }
+    input.invalid, select.invalid, textarea.invalid { border-color: var(--danger); }
+    .field-error { font-size: 12px; color: var(--danger); font-weight: 600; min-height: 0; }
     .field-hint { font-size: 12px; color: var(--gray-400); }
-    textarea { resize: vertical; min-height: 80px; }
-    .checkbox-group { display: flex; align-items: center; gap: 8px; }
-    .checkbox-group input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
-    .checkbox-group label { font-size: 14px; font-weight: 400; cursor: pointer; margin: 0; }
-    .form-divider { border: none; border-top: 1px solid var(--gray-200); margin: 24px 0; }
+    textarea { resize: vertical; min-height: 90px; }
+    .input-affix { position: relative; display: flex; align-items: center; }
+    .input-affix .suffix { position: absolute; right: 12px; font-size: 13px; color: var(--gray-400); font-weight: 600; pointer-events: none; }
+    .input-affix input { padding-right: 34px; text-align: right; }
+
+    .checkbox-group { display: flex; align-items: flex-start; gap: 9px; }
+    .checkbox-group input[type="checkbox"] { width: 17px; height: 17px; cursor: pointer; accent-color: var(--primary); margin-top: 2px; }
+    .checkbox-group label { font-size: 14px; font-weight: 500; cursor: pointer; margin: 0; color: var(--gray-700); }
+    .form-divider { border: none; border-top: 1px solid var(--gray-200); margin: 22px 0; }
+
+    /* computed cost summary */
+    .cost-summary { background: var(--primary-light); border: 1px solid var(--primary-soft); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .cost-summary .label { font-size: 13px; color: var(--primary-darker); font-weight: 700; }
+    .cost-summary .value { font-size: 22px; font-weight: 800; color: var(--primary-darker); letter-spacing: -0.5px; }
+
+    /* file upload */
+    .upload-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    @media (max-width: 820px) { .upload-grid { grid-template-columns: 1fr; } }
+    .upload-box {
+      border: 2px dashed var(--gray-300); border-radius: 10px; padding: 18px 14px;
+      text-align: center; cursor: pointer; transition: all 0.15s; background: var(--gray-50);
+    }
+    .upload-box:hover { border-color: var(--primary); background: var(--primary-light); }
+    .upload-box.has-file { border-style: solid; border-color: var(--success); background: var(--success-bg); }
+    .upload-box input[type="file"] { display: none; }
+    .upload-icon { font-size: 24px; }
+    .upload-title { font-size: 13px; font-weight: 700; color: var(--gray-700); margin-top: 6px; }
+    .upload-hint { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+    .upload-file { font-size: 12px; color: var(--success); font-weight: 700; margin-top: 6px; word-break: break-all; }
+
     .form-actions {
-      display: flex; justify-content: flex-end; gap: 12px;
-      padding: 20px 24px;
-      background: var(--gray-50);
-      border-top: 1px solid var(--gray-200);
-      border-radius: 0 0 var(--radius) var(--radius);
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      padding: 18px 22px; background: var(--gray-50); border-top: 1px solid var(--gray-200);
+      border-radius: 0 0 var(--radius) var(--radius); flex-wrap: wrap;
     }
+    .form-actions .left { font-size: 13px; color: var(--gray-500); }
+    .form-actions .right { display: flex; gap: 10px; }
 
-    .notice {
-      border-radius: 8px;
-      padding: 14px 18px;
-      font-size: 14px;
-      display: flex;
-      gap: 10px;
-      margin-bottom: 24px;
-    }
-    .notice.info { background: var(--info-bg); color: var(--info); }
-    .notice-icon { flex-shrink: 0; font-size: 16px; }
+    /* ── Notice ──────────────────────────────────────── */
+    .notice { border-radius: 10px; padding: 14px 18px; font-size: 14px; display: flex; gap: 11px; margin-bottom: 22px; border: 1px solid; }
+    .notice.info { background: var(--primary-light); color: var(--primary-darker); border-color: var(--primary-soft); }
+    .notice-icon { flex-shrink: 0; font-size: 17px; }
     .notice ul { margin: 6px 0 0 16px; }
-    .notice li { margin-bottom: 4px; }
+    .notice li { margin-bottom: 3px; }
+    .notice strong { color: var(--ink-900); }
 
-    .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 200;
-      display: flex; align-items: center; justify-content: center;
-      padding: 20px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s;
-    }
+    /* ── Modal ───────────────────────────────────────── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(24,24,27,0.55); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(2px); }
     .modal-overlay.open { opacity: 1; pointer-events: all; }
-    .modal {
-      background: white;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 700px;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: var(--shadow-lg);
-      transform: scale(0.95);
-      transition: transform 0.2s;
-    }
-    .modal-overlay.open .modal { transform: scale(1); }
-    .modal-header {
-      padding: 20px 24px;
-      border-bottom: 1px solid var(--gray-200);
-      display: flex; align-items: center; justify-content: space-between;
-      position: sticky; top: 0; background: white; z-index: 1;
-    }
-    .modal-title { font-size: 18px; font-weight: 700; color: var(--gray-900); }
-    .modal-close {
-      background: var(--gray-100); border: none; cursor: pointer;
-      width: 32px; height: 32px; border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; color: var(--gray-500);
-      transition: background 0.1s;
-    }
+    .modal { background: #fff; border-radius: var(--radius-lg); width: 100%; max-width: 720px; max-height: 92vh; overflow-y: auto; box-shadow: var(--shadow-lg); transform: scale(0.96) translateY(8px); transition: transform 0.2s; }
+    .modal.narrow { max-width: 520px; }
+    .modal-overlay.open .modal { transform: none; }
+    .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: #fff; z-index: 1; }
+    .modal-title { font-size: 18px; font-weight: 800; color: var(--ink-900); }
+    .modal-close { background: var(--gray-100); border: none; cursor: pointer; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--gray-500); transition: background 0.1s; }
     .modal-close:hover { background: var(--gray-200); }
     .modal-body { padding: 24px; }
-    .modal-footer {
-      padding: 16px 24px;
-      border-top: 1px solid var(--gray-200);
-      display: flex; gap: 10px; justify-content: flex-end;
-      flex-wrap: wrap;
-    }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--gray-200); display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; position: sticky; bottom: 0; background: #fff; }
 
-    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .detail-section-title {
-      font-size: 13px; font-weight: 600; color: var(--primary);
-      text-transform: uppercase; letter-spacing: 0.5px;
-      grid-column: 1/-1;
-      padding-bottom: 8px;
-      border-bottom: 2px solid var(--primary-light);
-      margin-top: 8px;
-    }
+    /* detail layout */
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .detail-section-title { font-size: 12px; font-weight: 800; color: var(--primary); letter-spacing: 0.4px; grid-column: 1/-1; padding-bottom: 7px; border-bottom: 2px solid var(--primary-soft); margin-top: 6px; display: flex; align-items: center; gap: 7px; }
     .detail-item { display: flex; flex-direction: column; gap: 3px; }
-    .detail-label { font-size: 12px; color: var(--gray-400); font-weight: 500; }
-    .detail-value { font-size: 14px; color: var(--gray-800); font-weight: 500; }
+    .detail-label { font-size: 12px; color: var(--gray-400); font-weight: 600; }
+    .detail-value { font-size: 14px; color: var(--ink-800); font-weight: 600; }
     .detail-item.full { grid-column: 1/-1; }
 
-    .review-panel {
-      margin-top: 20px;
-      border: 1px solid var(--gray-200);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .review-panel-header {
-      padding: 12px 16px;
-      background: var(--gray-50);
-      font-size: 14px; font-weight: 600; color: var(--gray-700);
-      border-bottom: 1px solid var(--gray-200);
-    }
-    .review-panel-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .doc-list { display: flex; flex-direction: column; gap: 8px; grid-column: 1/-1; }
+    .doc-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--gray-200); border-radius: 8px; background: var(--gray-50); }
+    .doc-row .doc-ic { font-size: 18px; }
+    .doc-row .doc-name { font-size: 13px; font-weight: 600; color: var(--ink-800); flex: 1; }
+    .doc-row .doc-status { font-size: 12px; font-weight: 700; }
+    .doc-row.attached .doc-status { color: var(--success); }
+    .doc-row.missing { background: #fff; border-style: dashed; }
+    .doc-row.missing .doc-status { color: var(--gray-400); }
+
+    .review-panel { margin-top: 22px; border: 1px solid var(--primary-soft); border-radius: 10px; overflow: hidden; }
+    .review-panel-header { padding: 12px 16px; background: var(--primary-light); font-size: 14px; font-weight: 700; color: var(--primary-darker); border-bottom: 1px solid var(--primary-soft); }
+    .review-panel-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
     .review-status-row { display: flex; gap: 8px; flex-wrap: wrap; }
 
-    .toast-container {
-      position: fixed;
-      bottom: 24px; right: 24px;
-      z-index: 999;
-      display: flex; flex-direction: column; gap: 8px;
-    }
-    .toast {
-      background: var(--gray-900);
-      color: white;
-      padding: 12px 18px;
-      border-radius: 8px;
-      font-size: 14px;
-      box-shadow: var(--shadow-lg);
-      display: flex; align-items: center; gap: 8px;
-      animation: slideIn 0.2s ease;
-      max-width: 320px;
-    }
-    .toast.success { background: var(--success); }
-    .toast.error { background: var(--danger); }
-    .toast.warning { background: #d97706; }
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
+    /* ── Dashboard ───────────────────────────────────── */
+    .dash-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; }
+    @media (max-width: 960px) { .dash-grid { grid-template-columns: 1fr; } }
 
-    .amount { font-weight: 600; color: var(--gray-900); }
-    .amount-highlight { color: var(--primary); font-weight: 700; }
+    .bar-chart { display: flex; align-items: flex-end; gap: 14px; height: 220px; padding: 10px 4px 0; }
+    .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; height: 100%; justify-content: flex-end; min-width: 0; }
+    .bar-stack { width: 100%; max-width: 46px; display: flex; flex-direction: column-reverse; border-radius: 6px 6px 0 0; overflow: hidden; box-shadow: var(--shadow-xs); transition: opacity 0.15s; }
+    .bar-stack:hover { opacity: 0.85; }
+    .bar-seg.approved { background: var(--success); }
+    .bar-seg.reviewing { background: var(--info); }
+    .bar-seg.pending { background: var(--gray-300); }
+    .bar-seg.rejected { background: var(--danger); }
+    .bar-value { font-size: 12px; font-weight: 700; color: var(--ink-800); }
+    .bar-label { font-size: 12px; color: var(--gray-500); font-weight: 600; }
+    .chart-legend { display: flex; gap: 16px; flex-wrap: wrap; padding-top: 14px; border-top: 1px solid var(--gray-100); margin-top: 14px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gray-600); font-weight: 600; }
+    .legend-dot { width: 11px; height: 11px; border-radius: 3px; }
 
-    .loading {
-      display: flex; align-items: center; justify-content: center;
-      padding: 48px; color: var(--gray-400);
-      gap: 8px; font-size: 15px;
-    }
-    .spinner {
-      width: 20px; height: 20px;
-      border: 2px solid var(--gray-200);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-    }
+    .ranklist { display: flex; flex-direction: column; gap: 14px; }
+    .rank-row { display: flex; flex-direction: column; gap: 6px; }
+    .rank-top { display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
+    .rank-name { font-weight: 700; color: var(--ink-800); display: flex; align-items: center; gap: 8px; }
+    .rank-meta { color: var(--gray-500); font-weight: 600; }
+    .rank-bar-track { height: 9px; background: var(--gray-100); border-radius: 99px; overflow: hidden; }
+    .rank-bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #FF9248); border-radius: 99px; transition: width 0.4s ease; }
+
+    .progress-summary { display: flex; flex-direction: column; gap: 16px; }
+    .psum-row { }
+    .psum-top { display: flex; align-items: center; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+    .psum-label { font-weight: 700; color: var(--ink-800); display: flex; align-items: center; gap: 7px; }
+    .psum-pct { font-weight: 700; color: var(--gray-500); }
+    .psum-track { height: 10px; background: var(--gray-100); border-radius: 99px; overflow: hidden; }
+    .psum-fill { height: 100%; border-radius: 99px; transition: width 0.4s ease; }
+    .psum-fill.pending { background: var(--gray-400); }
+    .psum-fill.reviewing { background: var(--info); }
+    .psum-fill.approved { background: var(--success); }
+    .psum-fill.rejected { background: var(--danger); }
+
+    .amount { font-weight: 700; color: var(--ink-900); }
+    .amount-highlight { color: var(--primary); font-weight: 800; }
+
+    .loading { display: flex; align-items: center; justify-content: center; padding: 56px; color: var(--gray-400); gap: 9px; font-size: 15px; }
+    .spinner { width: 20px; height: 20px; border: 2px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.6s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .action-cell { display: flex; gap: 6px; white-space: nowrap; }
+
+    /* ── Toast ───────────────────────────────────────── */
+    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 9px; }
+    .toast { background: var(--ink-900); color: #fff; padding: 13px 18px; border-radius: 10px; font-size: 14px; font-weight: 600; box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 9px; animation: slideIn 0.22s ease; max-width: 340px; border-left: 4px solid var(--primary); }
+    .toast.success { border-left-color: var(--success); }
+    .toast.error { border-left-color: var(--danger); }
+    .toast.warning { border-left-color: var(--warning); }
+    @keyframes slideIn { from { transform: translateX(110%); opacity: 0; } to { transform: none; opacity: 1; } }
+
+    /* ── Design guide ────────────────────────────────── */
+    .guide-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+    .swatch { border-radius: 10px; overflow: hidden; border: 1px solid var(--gray-200); }
+    .swatch-color { height: 72px; }
+    .swatch-meta { padding: 10px 12px; }
+    .swatch-name { font-size: 13px; font-weight: 700; color: var(--ink-900); }
+    .swatch-hex { font-size: 12px; color: var(--gray-500); font-family: ui-monospace, monospace; }
+    .comp-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--gray-100); }
+    .comp-row:last-child { border-bottom: none; }
+    .comp-label { width: 130px; font-size: 13px; font-weight: 700; color: var(--gray-600); flex-shrink: 0; }
+    .type-sample { padding: 10px 0; border-bottom: 1px solid var(--gray-100); }
+    .type-meta { font-size: 12px; color: var(--gray-400); font-family: ui-monospace, monospace; }
+
+    @media (max-width: 720px) {
+      .header-inner { padding: 0 16px; }
+      .container { padding: 22px 16px 48px; }
+      .brand-sub { display: none; }
+      .nav-btn { padding: 9px 11px; font-size: 13px; }
+      .header-user { display: none; }
+      .progress-steps { display: none; }
+    }
   </style>
 </head>
 <body>
 
 <header class="header">
   <div class="header-inner">
-    <div class="header-logo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-      </svg>
-      의료비 지원 시스템
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-title">의료비 지원 시스템</span>
+        <span class="brand-sub">MEDICAL EXPENSE SUPPORT</span>
+      </div>
     </div>
     <nav class="header-nav">
-      <button class="nav-btn active" onclick="showPage('apply', this)">신청하기</button>
-      <button class="nav-btn" onclick="showPage('status', this)">신청 조회</button>
-      <button class="nav-btn" onclick="showPage('admin', this)">관리자</button>
+      <button class="nav-btn active" onclick="showPage('apply', this)">신청서 작성</button>
+      <button class="nav-btn" onclick="showPage('review', this)">증빙 검수</button>
+      <button class="nav-btn" onclick="showPage('dashboard', this)">대시보드</button>
+      <button class="nav-btn" onclick="showPage('guide', this)">디자인 가이드</button>
     </nav>
+    <div class="header-user">
+      <span class="hide-sm">의료비 담당</span>
+      <div class="avatar">담</div>
+    </div>
   </div>
 </header>
 
 <main class="container">
 
-  <!-- APPLY PAGE -->
+  <!-- ════════════ APPLY ════════════ -->
   <div id="page-apply" class="page active">
     <div class="page-header">
-      <div class="page-title">의료비 지원 신청</div>
-      <div class="page-subtitle">중증질환 및 희귀질환 의료비 지원을 신청하실 수 있습니다.</div>
+      <div>
+        <div class="page-title"><span class="tick"></span>의료비 지원 신청서</div>
+        <div class="page-subtitle">임직원 의료비 지원을 신청하고 증빙 서류를 첨부합니다.</div>
+      </div>
+    </div>
+
+    <div class="progress-steps" id="progressSteps">
+      <div class="pstep active" data-step="1"><div class="pstep-num">1</div><div class="pstep-label">신청자 정보</div></div>
+      <div class="pstep-line"></div>
+      <div class="pstep" data-step="2"><div class="pstep-num">2</div><div class="pstep-label">진료 정보</div></div>
+      <div class="pstep-line"></div>
+      <div class="pstep" data-step="3"><div class="pstep-num">3</div><div class="pstep-label">비용 항목</div></div>
+      <div class="pstep-line"></div>
+      <div class="pstep" data-step="4"><div class="pstep-num">4</div><div class="pstep-label">서류 첨부</div></div>
     </div>
 
     <div class="notice info">
       <span class="notice-icon">ℹ️</span>
       <div>
-        <strong>지원 안내</strong>
+        <strong>신청 안내</strong>
         <ul>
-          <li>지원 대상: 암, 희귀질환, 중증 심장·뇌·외상질환 진단을 받은 환자</li>
-          <li>지원 범위: 건강보험 급여 항목 중 본인부담금의 일부 또는 전액</li>
-          <li>소득 기준: 가구 소득 기준 중위소득 120% 이하</li>
-          <li>신청 후 심사까지 약 2주 소요됩니다.</li>
+          <li>지원 대상: 본인 및 부양가족(배우자·직계존비속)의 진료비</li>
+          <li>제출 서류: 진료비 영수증, 진료비 세부내역서(스캔본), 처방전</li>
+          <li>지원금액 = 본인부담액 − 제외금액 (보험·타기관 지원분 제외)</li>
+          <li>신청 후 증빙 검수 및 결재까지 평균 3~5영업일이 소요됩니다.</li>
         </ul>
       </div>
     </div>
 
     <form id="applyForm" novalidate>
-      <div class="form-section">
+      <!-- 1. 신청자 정보 -->
+      <div class="form-section" data-section="1">
         <div class="form-section-header">
           <div class="form-section-icon">👤</div>
-          <div class="form-section-title">신청인 정보</div>
+          <div class="form-section-title">신청자 정보</div>
+          <div class="form-section-step">STEP 1</div>
         </div>
         <div class="form-section-body">
           <div class="form-grid">
             <div class="form-group">
               <label>성명 <span class="required">*</span></label>
-              <input type="text" name="applicantName" placeholder="홍길동" />
-              <span class="field-error" id="err-applicantName"></span>
+              <input type="text" name="employeeName" placeholder="홍길동" />
+              <span class="field-error" id="err-employeeName"></span>
             </div>
             <div class="form-group">
-              <label>생년월일 <span class="required">*</span></label>
-              <input type="date" name="birthDate" />
-              <span class="field-error" id="err-birthDate"></span>
+              <label>사번 <span class="required">*</span></label>
+              <input type="text" name="employeeId" placeholder="예: 20231234" />
+              <span class="field-error" id="err-employeeId"></span>
             </div>
             <div class="form-group">
-              <label>연락처 <span class="required">*</span></label>
+              <label>사업장(공장) <span class="required">*</span></label>
+              <select name="factory">
+                <option value="">-- 선택 --</option>
+                <option>여수사업장</option>
+                <option>울산사업장</option>
+                <option>대전사업장</option>
+                <option>인천사업장</option>
+                <option>본사</option>
+              </select>
+              <span class="field-error" id="err-factory"></span>
+            </div>
+            <div class="form-group">
+              <label>부서 <span class="required">*</span></label>
+              <select name="department">
+                <option value="">-- 선택 --</option>
+                <option>생산팀</option>
+                <option>품질관리팀</option>
+                <option>연구개발팀</option>
+                <option>안전환경팀</option>
+                <option>경영지원팀</option>
+                <option>영업팀</option>
+              </select>
+              <span class="field-error" id="err-department"></span>
+            </div>
+            <div class="form-group">
+              <label>직급 <span class="required">*</span></label>
+              <select name="position">
+                <option value="">-- 선택 --</option>
+                <option>사원</option>
+                <option>주임</option>
+                <option>대리</option>
+                <option>과장</option>
+                <option>차장</option>
+                <option>부장</option>
+              </select>
+              <span class="field-error" id="err-position"></span>
+            </div>
+            <div class="form-group">
+              <label>연락처 <span class="opt">(선택)</span></label>
               <input type="tel" name="phone" placeholder="010-0000-0000" />
-              <span class="field-error" id="err-phone"></span>
             </div>
             <div class="form-group">
-              <label>주소 <span class="required">*</span></label>
-              <input type="text" name="address" placeholder="시/도, 시/군/구, 상세주소" />
-              <span class="field-error" id="err-address"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <div class="form-section-header">
-          <div class="form-section-icon">🏥</div>
-          <div class="form-section-title">환자 정보</div>
-        </div>
-        <div class="form-section-body">
-          <div class="form-grid">
-            <div class="form-group">
-              <label>환자 성명</label>
-              <input type="text" name="patientName" placeholder="신청인과 동일한 경우 비워두세요" />
+              <label>환자 성명 <span class="opt">(본인과 동일 시 비움)</span></label>
+              <input type="text" name="patientName" placeholder="부양가족 진료 시 입력" />
             </div>
             <div class="form-group">
               <label>신청인과의 관계 <span class="required">*</span></label>
@@ -524,110 +596,198 @@
                 <option value="spouse">배우자</option>
                 <option value="parent">부모</option>
                 <option value="child">자녀</option>
-                <option value="sibling">형제/자매</option>
               </select>
-            </div>
-            <div class="form-group">
-              <label>진료 병원 <span class="required">*</span></label>
-              <input type="text" name="hospitalName" placeholder="병원명 입력" />
-              <span class="field-error" id="err-hospitalName"></span>
-            </div>
-            <div class="form-group">
-              <label>질환 분류 <span class="required">*</span></label>
-              <select name="diseaseCategory">
-                <option value="">-- 선택 --</option>
-                <option value="암(악성신생물)">암(악성신생물)</option>
-                <option value="희귀질환">희귀질환</option>
-                <option value="중증 심장질환">중증 심장질환</option>
-                <option value="중증 뇌질환">중증 뇌질환</option>
-                <option value="중증 외상">중증 외상</option>
-                <option value="기타 중증질환">기타 중증질환</option>
-              </select>
-              <span class="field-error" id="err-diseaseCategory"></span>
-            </div>
-            <div class="form-group full">
-              <label>진단명 <span class="required">*</span></label>
-              <input type="text" name="diagnosisName" placeholder="예: 위암 2기, 희귀유전질환 등" />
-              <span class="field-error" id="err-diagnosisName"></span>
-            </div>
-            <div class="form-group">
-              <label>치료 시작일 <span class="required">*</span></label>
-              <input type="date" name="treatmentPeriodStart" />
-              <span class="field-error" id="err-treatmentPeriodStart"></span>
-            </div>
-            <div class="form-group">
-              <label>치료 종료일</label>
-              <input type="date" name="treatmentPeriodEnd" />
-              <span class="field-hint">치료 중인 경우 비워두세요</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="form-section">
+      <!-- 2. 진료 정보 -->
+      <div class="form-section" data-section="2">
         <div class="form-section-header">
-          <div class="form-section-icon">💰</div>
-          <div class="form-section-title">의료비 내역</div>
+          <div class="form-section-icon">🏥</div>
+          <div class="form-section-title">진료 정보</div>
+          <div class="form-section-step">STEP 2</div>
         </div>
         <div class="form-section-body">
           <div class="form-grid">
             <div class="form-group">
-              <label>총 의료비 <span class="required">*</span></label>
-              <input type="number" name="totalMedicalCost" placeholder="0" min="0" step="1000" />
-              <span class="field-hint">원 단위로 입력</span>
-              <span class="field-error" id="err-totalMedicalCost"></span>
+              <label>진료 시작일 <span class="required">*</span></label>
+              <input type="date" name="treatmentStart" />
+              <span class="field-error" id="err-treatmentStart"></span>
             </div>
             <div class="form-group">
-              <label>건강보험 지원금</label>
-              <input type="number" name="insuranceCoverage" placeholder="0" min="0" step="1000" />
-              <span class="field-hint">건강보험에서 지원받은 금액</span>
+              <label>진료 종료일 <span class="opt">(진료 중이면 비움)</span></label>
+              <input type="date" name="treatmentEnd" />
             </div>
-            <div class="form-group full">
-              <label>신청 지원금액 <span class="required">*</span></label>
-              <input type="number" name="requestedAmount" placeholder="0" min="0" step="1000" />
-              <span class="field-hint">본인 부담금 중 지원받고자 하는 금액</span>
-              <span class="field-error" id="err-requestedAmount"></span>
+            <div class="form-group">
+              <label>병원명 <span class="required">*</span></label>
+              <input type="text" name="hospitalName" placeholder="예: ○○대학교병원" />
+              <span class="field-error" id="err-hospitalName"></span>
             </div>
-          </div>
-          <hr class="form-divider" />
-          <div class="form-group">
-            <div class="checkbox-group">
-              <input type="checkbox" name="incomeCertified" id="incomeCertified" />
-              <label for="incomeCertified">가구 소득 기준 확인 (중위소득 120% 이하) 및 관련 서류 제출에 동의합니다.</label>
+            <div class="form-group">
+              <label>병명(진단명) <span class="required">*</span></label>
+              <input type="text" name="diseaseName" placeholder="예: 급성 위염, 골절 등" />
+              <span class="field-error" id="err-diseaseName"></span>
+            </div>
+            <div class="form-group">
+              <label>진료 구분 <span class="required">*</span></label>
+              <select name="treatmentType">
+                <option value="외래">외래</option>
+                <option value="입원">입원</option>
+                <option value="수술">수술</option>
+                <option value="약제">약제</option>
+                <option value="검진">건강검진</option>
+              </select>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="form-section">
+      <!-- 3. 비용 항목 -->
+      <div class="form-section" data-section="3">
+        <div class="form-section-header">
+          <div class="form-section-icon">💰</div>
+          <div class="form-section-title">비용 항목</div>
+          <div class="form-section-step">STEP 3</div>
+        </div>
+        <div class="form-section-body">
+          <div class="form-grid cols-3">
+            <div class="form-group">
+              <label>본인부담액 <span class="required">*</span></label>
+              <div class="input-affix">
+                <input type="number" name="selfPayAmount" placeholder="0" min="0" step="100" oninput="recalcSupport()" />
+                <span class="suffix">원</span>
+              </div>
+              <span class="field-error" id="err-selfPayAmount"></span>
+            </div>
+            <div class="form-group">
+              <label>제외금액 <span class="opt">(보험·타지원분)</span></label>
+              <div class="input-affix">
+                <input type="number" name="excludedAmount" placeholder="0" min="0" step="100" oninput="recalcSupport()" />
+                <span class="suffix">원</span>
+              </div>
+              <span class="field-hint">건강보험·실손·타기관 지원금</span>
+            </div>
+            <div class="form-group">
+              <label>신청 지원금액 <span class="required">*</span></label>
+              <div class="input-affix">
+                <input type="number" name="supportAmount" placeholder="0" min="0" step="100" />
+                <span class="suffix">원</span>
+              </div>
+              <span class="field-error" id="err-supportAmount"></span>
+            </div>
+          </div>
+          <hr class="form-divider" />
+          <div class="cost-summary">
+            <span class="label">산정 지원금액 (본인부담액 − 제외금액)</span>
+            <span class="value" id="computedSupport">0원</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. 서류 첨부 -->
+      <div class="form-section" data-section="4">
+        <div class="form-section-header">
+          <div class="form-section-icon">📎</div>
+          <div class="form-section-title">증빙 서류 첨부</div>
+          <div class="form-section-step">STEP 4</div>
+        </div>
+        <div class="form-section-body">
+          <div class="upload-grid">
+            <label class="upload-box" id="box-scan">
+              <input type="file" accept="image/*,.pdf" onchange="onFile(this,'scan','세부내역서 스캔본')" />
+              <div class="upload-icon">🧾</div>
+              <div class="upload-title">진료비 세부내역서</div>
+              <div class="upload-hint">스캔본 · 이미지/PDF</div>
+              <div class="upload-file" id="file-scan"></div>
+            </label>
+            <label class="upload-box" id="box-receipt">
+              <input type="file" accept="image/*,.pdf" onchange="onFile(this,'receipt','진료비 영수증')" />
+              <div class="upload-icon">💳</div>
+              <div class="upload-title">진료비 영수증</div>
+              <div class="upload-hint">이미지/PDF</div>
+              <div class="upload-file" id="file-receipt"></div>
+            </label>
+            <label class="upload-box" id="box-prescription">
+              <input type="file" accept="image/*,.pdf" onchange="onFile(this,'prescription','처방전')" />
+              <div class="upload-icon">📋</div>
+              <div class="upload-title">처방전</div>
+              <div class="upload-hint">약제비 신청 시</div>
+              <div class="upload-file" id="file-prescription"></div>
+            </label>
+          </div>
+          <hr class="form-divider" />
+          <div class="form-group full">
+            <label>특이사항 <span class="opt">(선택)</span></label>
+            <textarea name="note" placeholder="검수 담당자에게 전달할 내용이 있으면 입력하세요. (예: 분할 영수증, 추가 제출 예정 서류 등)"></textarea>
+          </div>
+          <div class="form-group full" style="margin-top:6px;">
+            <div class="checkbox-group">
+              <input type="checkbox" name="agree" id="agree" />
+              <label for="agree">상기 내용이 사실과 다름없으며, 제출 서류의 진위 확인 및 개인정보 처리에 동의합니다.</label>
+            </div>
+            <span class="field-error" id="err-agree" style="margin-top:6px;"></span>
+          </div>
+        </div>
         <div class="form-actions">
-          <button type="button" class="btn btn-outline" onclick="resetForm()">초기화</button>
-          <button type="submit" class="btn btn-primary" id="submitBtn">신청서 제출</button>
+          <div class="left" id="docCounter">첨부 서류 0/3</div>
+          <div class="right">
+            <button type="button" class="btn btn-outline" onclick="resetForm()">초기화</button>
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              제출 전 검토
+            </button>
+          </div>
         </div>
       </div>
     </form>
   </div>
 
-  <!-- STATUS PAGE -->
-  <div id="page-status" class="page">
+  <!-- ════════════ REVIEW ════════════ -->
+  <div id="page-review" class="page">
     <div class="page-header">
-      <div class="page-title">신청 현황 조회</div>
-      <div class="page-subtitle">제출한 의료비 지원 신청의 처리 현황을 확인합니다.</div>
+      <div>
+        <div class="page-title"><span class="tick"></span>증빙자료 검수</div>
+        <div class="page-subtitle">제출된 신청 건의 증빙 서류를 검토하고 승인 또는 반려합니다.</div>
+      </div>
     </div>
-    <div class="card" style="margin-bottom:24px;">
+
+    <div class="stats-grid">
+      <div class="stat-card total"><div class="stat-icon">📋</div><div><div class="stat-label">전체 신청</div><div class="stat-value" id="rv-total">-</div></div></div>
+      <div class="stat-card pending"><div class="stat-icon">📥</div><div><div class="stat-label">접수</div><div class="stat-value" id="rv-pending">-</div></div></div>
+      <div class="stat-card reviewing"><div class="stat-icon">🔍</div><div><div class="stat-label">검토중</div><div class="stat-value" id="rv-reviewing">-</div></div></div>
+      <div class="stat-card approved"><div class="stat-icon">✅</div><div><div class="stat-label">승인</div><div class="stat-value" id="rv-approved">-</div></div></div>
+      <div class="stat-card rejected"><div class="stat-icon">⛔</div><div><div class="stat-label">반려</div><div class="stat-value" id="rv-rejected">-</div></div></div>
+    </div>
+
+    <div class="card">
       <div class="card-header">
-        <span class="card-title">신청 조회</span>
-        <div class="search-row">
+        <span class="card-title">검수 목록 <span class="count-pill" id="reviewCount">0건</span></span>
+        <div class="toolbar">
           <div class="search-wrapper">
             <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input class="search-input" type="text" id="statusSearch" placeholder="이름, 진단명 검색..." oninput="renderStatus()" />
+            <input class="search-input" type="text" id="rvSearch" placeholder="성명, 사번, 병명 검색..." oninput="renderReview()" />
           </div>
-          <select class="filter-select" id="statusFilter" onchange="renderStatus()">
+          <select class="filter-select" id="rvFactory" onchange="renderReview()">
+            <option value="all">전체 사업장</option>
+            <option>여수사업장</option><option>울산사업장</option><option>대전사업장</option><option>인천사업장</option><option>본사</option>
+          </select>
+          <select class="filter-select" id="rvDept" onchange="renderReview()">
+            <option value="all">전체 부서</option>
+            <option>생산팀</option><option>품질관리팀</option><option>연구개발팀</option><option>안전환경팀</option><option>경영지원팀</option><option>영업팀</option>
+          </select>
+          <select class="filter-select" id="rvStatus" onchange="renderReview()">
             <option value="all">전체 상태</option>
-            <option value="pending">접수 완료</option>
-            <option value="reviewing">심사 중</option>
+            <option value="pending">접수</option>
+            <option value="reviewing">검토중</option>
             <option value="approved">승인</option>
             <option value="rejected">반려</option>
+          </select>
+          <select class="filter-select" id="rvSort" onchange="renderReview()">
+            <option value="priority">우선순위순</option>
+            <option value="recent">최신순</option>
+            <option value="amount">금액순</option>
           </select>
         </div>
       </div>
@@ -635,65 +795,146 @@
         <table>
           <thead>
             <tr>
-              <th>신청인</th><th>진단명</th><th>병원</th><th>신청금액</th><th>신청일</th><th>상태</th><th>상세</th>
+              <th>우선순위</th><th>신청자</th><th>사업장 / 부서</th><th>병명 / 병원</th><th>신청금액</th><th>서류</th><th>신청일</th><th>상태</th><th>검수</th>
             </tr>
           </thead>
-          <tbody id="statusTableBody">
-            <tr><td colspan="7"><div class="loading"><div class="spinner"></div> 불러오는 중...</div></td></tr>
+          <tbody id="reviewTableBody">
+            <tr><td colspan="9"><div class="loading"><div class="spinner"></div> 불러오는 중...</div></td></tr>
           </tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <!-- ADMIN PAGE -->
-  <div id="page-admin" class="page">
+  <!-- ════════════ DASHBOARD ════════════ -->
+  <div id="page-dashboard" class="page">
     <div class="page-header">
-      <div class="page-title">관리자 심사 페이지</div>
-      <div class="page-subtitle">의료비 지원 신청 목록을 관리하고 심사 결과를 입력합니다.</div>
+      <div>
+        <div class="page-title"><span class="tick"></span>요약 대시보드</div>
+        <div class="page-subtitle">사업장·부서별 신청 현황과 월별 추이를 한눈에 확인합니다.</div>
+      </div>
     </div>
+
     <div class="stats-grid">
-      <div class="stat-card total"><div class="stat-icon">📋</div><div><div class="stat-label">전체 신청</div><div class="stat-value" id="stat-total">-</div></div></div>
-      <div class="stat-card pending"><div class="stat-icon">📥</div><div><div class="stat-label">접수 완료</div><div class="stat-value" id="stat-pending">-</div></div></div>
-      <div class="stat-card reviewing"><div class="stat-icon">🔍</div><div><div class="stat-label">심사 중</div><div class="stat-value" id="stat-reviewing">-</div></div></div>
-      <div class="stat-card approved"><div class="stat-icon">✅</div><div><div class="stat-label">승인</div><div class="stat-value" id="stat-approved">-</div></div></div>
-      <div class="stat-card rejected"><div class="stat-icon">❌</div><div><div class="stat-label">반려</div><div class="stat-value" id="stat-rejected">-</div></div></div>
+      <div class="stat-card total"><div class="stat-icon">📊</div><div><div class="stat-label">전체 신청 건수</div><div class="stat-value" id="db-total">-</div><div class="stat-sub" id="db-total-amt">총 지원신청액 -</div></div></div>
+      <div class="stat-card approved"><div class="stat-icon">✅</div><div><div class="stat-label">승인 완료</div><div class="stat-value" id="db-approved">-</div><div class="stat-sub" id="db-approved-amt">승인액 -</div></div></div>
+      <div class="stat-card reviewing"><div class="stat-icon">🔍</div><div><div class="stat-label">처리중 (접수+검토)</div><div class="stat-value" id="db-progress">-</div><div class="stat-sub">검수 대기 포함</div></div></div>
+      <div class="stat-card rejected"><div class="stat-icon">⛔</div><div><div class="stat-label">반려</div><div class="stat-value" id="db-rejected">-</div><div class="stat-sub" id="db-approval-rate">승인율 -</div></div></div>
     </div>
+
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">신청 목록</span>
-        <div class="search-row">
-          <div class="search-wrapper">
-            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input class="search-input" type="text" id="adminSearch" placeholder="이름, 진단명 검색..." oninput="renderAdmin()" />
-          </div>
-          <select class="filter-select" id="adminFilter" onchange="renderAdmin()">
-            <option value="all">전체 상태</option>
-            <option value="pending">접수 완료</option>
-            <option value="reviewing">심사 중</option>
-            <option value="approved">승인</option>
-            <option value="rejected">반려</option>
-          </select>
+      <div class="card-header"><span class="card-title">📈 월별 신청 추이</span><span class="cell-muted">최근 6개월 · 상태별 누적</span></div>
+      <div class="card-body">
+        <div class="bar-chart" id="monthlyChart"></div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:var(--success)"></span>승인</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--info)"></span>검토중</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--gray-300)"></span>접수</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--danger)"></span>반려</span>
         </div>
       </div>
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>신청인</th><th>진단명</th><th>병원</th><th>신청금액</th><th>신청일</th><th>소득확인</th><th>상태</th><th>관리</th>
-            </tr>
-          </thead>
-          <tbody id="adminTableBody">
-            <tr><td colspan="8"><div class="loading"><div class="spinner"></div> 불러오는 중...</div></td></tr>
-          </tbody>
-        </table>
+    </div>
+
+    <div class="dash-grid" style="margin-top:20px;">
+      <div class="card">
+        <div class="card-header"><span class="card-title">🏭 사업장별 신청 현황</span></div>
+        <div class="card-body"><div class="ranklist" id="factoryRank"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">🚦 진행 상태 요약</span></div>
+        <div class="card-body"><div class="progress-summary" id="statusSummary"></div></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <div class="card-header"><span class="card-title">👥 부서별 신청 현황</span></div>
+      <div class="card-body"><div class="ranklist" id="deptRank"></div></div>
+    </div>
+  </div>
+
+  <!-- ════════════ DESIGN GUIDE ════════════ -->
+  <div id="page-guide" class="page">
+    <div class="page-header">
+      <div>
+        <div class="page-title"><span class="tick"></span>디자인 가이드</div>
+        <div class="page-subtitle">색상 팔레트 · 타이포그래피 · 컴포넌트 라이브러리</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">🎨 컬러 팔레트</span></div>
+      <div class="card-body">
+        <div class="guide-grid">
+          <div class="swatch"><div class="swatch-color" style="background:#FF6600"></div><div class="swatch-meta"><div class="swatch-name">Primary</div><div class="swatch-hex">#FF6600</div></div></div>
+          <div class="swatch"><div class="swatch-color" style="background:#E25500"></div><div class="swatch-meta"><div class="swatch-name">Primary Dark</div><div class="swatch-hex">#E25500</div></div></div>
+          <div class="swatch"><div class="swatch-color" style="background:#FFF1E6"></div><div class="swatch-meta"><div class="swatch-name">Primary Light</div><div class="swatch-hex">#FFF1E6</div></div></div>
+          <div class="swatch"><div class="swatch-color" style="background:#1A1A1A"></div><div class="swatch-meta"><div class="swatch-name">Ink 900</div><div class="swatch-hex">#1A1A1A</div></div></div>
+          <div class="swatch"><div class="swatch-color" style="background:#333333"></div><div class="swatch-meta"><div class="swatch-name">Ink 700</div><div class="swatch-hex">#333333</div></div></div>
+          <div class="swatch"><div class="swatch-color" style="background:#1B8A5A"></div><div class="swatch-meta"><div class="swatch-name">Success</div><div class="swatch-hex">#1B8A5A</div></div></div>
+          <div class="swatch"><div class="swatch-color" style="background:#2563EB"></div><div class="swatch-meta"><div class="swatch-name">Info</div><div class="swatch-hex">#2563EB</div></div></div>
+          <div class="swatch"><div class="swatch-color" style="background:#D33A2C"></div><div class="swatch-meta"><div class="swatch-name">Danger</div><div class="swatch-hex">#D33A2C</div></div></div>
+          <div class="swatch"><div class="swatch-color" style="background:#FAFAFA;border:1px solid #E7E7EA"></div><div class="swatch-meta"><div class="swatch-name">Background</div><div class="swatch-hex">#FAFAFA</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">🔤 타이포그래피</span></div>
+      <div class="card-body">
+        <div class="type-sample"><div style="font-size:26px;font-weight:800;letter-spacing:-0.6px;color:var(--ink-900)">페이지 타이틀</div><div class="type-meta">26px / 800 / -0.6px</div></div>
+        <div class="type-sample"><div style="font-size:16px;font-weight:700;color:var(--ink-900)">카드 · 섹션 제목</div><div class="type-meta">16px / 700</div></div>
+        <div class="type-sample"><div style="font-size:14px;font-weight:500;color:var(--ink-800)">본문 텍스트 — 가독성 높은 산세리프를 기본으로 사용합니다.</div><div class="type-meta">14px / 500 / line-height 1.55</div></div>
+        <div class="type-sample"><div style="font-size:13px;font-weight:700;color:var(--gray-500)">레이블 / 캡션</div><div class="type-meta">13px / 700 / gray-500</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">🧩 컴포넌트</span></div>
+      <div class="card-body">
+        <div class="comp-row"><div class="comp-label">버튼</div>
+          <button class="btn btn-primary">Primary</button>
+          <button class="btn btn-success">승인</button>
+          <button class="btn btn-danger">반려</button>
+          <button class="btn btn-warning">검토중</button>
+          <button class="btn btn-outline">Outline</button>
+        </div>
+        <div class="comp-row"><div class="comp-label">상태 배지</div>
+          <span class="badge pending"><span class="badge-dot"></span>접수</span>
+          <span class="badge reviewing"><span class="badge-dot"></span>검토중</span>
+          <span class="badge approved"><span class="badge-dot"></span>승인</span>
+          <span class="badge rejected"><span class="badge-dot"></span>반려</span>
+        </div>
+        <div class="comp-row"><div class="comp-label">우선순위</div>
+          <span class="prio urgent">🔴 긴급</span>
+          <span class="prio high">🟠 높음</span>
+          <span class="prio normal">⚪ 보통</span>
+        </div>
+        <div class="comp-row"><div class="comp-label">입력 필드</div>
+          <input type="text" placeholder="텍스트 입력" style="width:200px" />
+          <select class="filter-select"><option>드롭다운</option></select>
+        </div>
       </div>
     </div>
   </div>
 
 </main>
 
-<!-- Detail Modal -->
+<!-- Confirm submit modal -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal narrow">
+    <div class="modal-header">
+      <div class="modal-title">제출 전 검토</div>
+      <button class="modal-close" onclick="closeConfirm()">✕</button>
+    </div>
+    <div class="modal-body" id="confirmBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeConfirm()">수정하기</button>
+      <button class="btn btn-primary" id="confirmSubmitBtn">신청서 제출</button>
+    </div>
+  </div>
+</div>
+
+<!-- Detail / review modal -->
 <div class="modal-overlay" id="detailModal">
   <div class="modal">
     <div class="modal-header">
@@ -707,15 +948,8 @@
 
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- Firebase SDK -->
+<!-- App logic — Firestore when reachable, localStorage fallback otherwise -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-  import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js";
-  import {
-    getFirestore, collection, addDoc, getDocs, doc,
-    updateDoc, deleteDoc, query, orderBy, serverTimestamp, Timestamp
-  } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
-
   const firebaseConfig = {
     apiKey: "AIzaSyA76pgQGKZgdDgj_m9jB94WrFN5DWsAqWQ",
     authDomain: "my-01-a826e.firebaseapp.com",
@@ -726,40 +960,126 @@
     measurementId: "G-K45JXFL4S1"
   };
 
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const db = getFirestore(app);
-  const COL = collection(db, "applications");
+  // ── Data layer ────────────────────────────────────────────
+  // mode 'firebase' when the SDK loads & Firestore is reachable; else 'local'.
+  let mode = 'local';
+  let fb = null;          // bound Firestore helpers
+  let track = () => {};   // analytics no-op until wired
 
-  const STATUS_LABELS = {
-    pending: '접수 완료',
-    reviewing: '심사 중',
-    approved: '승인',
-    rejected: '반려',
+  async function initBackend() {
+    try {
+      const appMod = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+      const fsMod = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+      const app = appMod.initializeApp(firebaseConfig);
+      const db = fsMod.getFirestore(app);
+      fb = { db, fs: fsMod, COL: fsMod.collection(db, "medicalClaims") };
+      // verify reachability with a lightweight read
+      await fsMod.getDocs(fb.COL);
+      mode = 'firebase';
+      try {
+        const anMod = await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js");
+        const analytics = anMod.getAnalytics(app);
+        track = (n, p) => { try { anMod.logEvent(analytics, n, p); } catch (e) {} };
+      } catch (e) {}
+    } catch (e) {
+      mode = 'local';
+      console.warn('Firestore 사용 불가 — 로컬 데모 모드로 동작합니다.', e?.message || e);
+      seedLocalIfEmpty();
+    }
+  }
+
+  // localStorage-backed store (demo / offline)
+  const LS_KEY = 'medicalClaims';
+  const loadLocal = () => { try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch (e) { return []; } };
+  const saveLocal = (arr) => localStorage.setItem(LS_KEY, JSON.stringify(arr));
+
+  const Data = {
+    async getAll() {
+      if (mode === 'firebase') {
+        try {
+          const snap = await fb.fs.getDocs(fb.fs.query(fb.COL, fb.fs.orderBy('appliedAt', 'desc')));
+          return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        } catch (e) {
+          const snap = await fb.fs.getDocs(fb.COL);
+          return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        }
+      }
+      return loadLocal().sort((a, b) => (b.appliedAt || '').localeCompare(a.appliedAt || ''));
+    },
+    async add(obj) {
+      if (mode === 'firebase') {
+        const ref = await fb.fs.addDoc(fb.COL, { ...obj, appliedAt: fb.fs.serverTimestamp(), updatedAt: fb.fs.serverTimestamp() });
+        return ref.id;
+      }
+      const arr = loadLocal();
+      const id = 'L' + Date.now().toString(36) + Math.floor(Math.random() * 1e4);
+      const now = new Date().toISOString();
+      arr.push({ id, ...obj, appliedAt: now, updatedAt: now });
+      saveLocal(arr);
+      return id;
+    },
+    async update(id, patch) {
+      if (mode === 'firebase') {
+        await fb.fs.updateDoc(fb.fs.doc(fb.db, 'medicalClaims', id), { ...patch, updatedAt: fb.fs.serverTimestamp() });
+        return;
+      }
+      const arr = loadLocal();
+      const i = arr.findIndex(x => x.id === id);
+      if (i >= 0) { arr[i] = { ...arr[i], ...patch, updatedAt: new Date().toISOString() }; saveLocal(arr); }
+    },
+    async remove(id) {
+      if (mode === 'firebase') { await fb.fs.deleteDoc(fb.fs.doc(fb.db, 'medicalClaims', id)); return; }
+      saveLocal(loadLocal().filter(x => x.id !== id));
+    },
   };
 
-  const RELATIONSHIP_LABELS = {
-    self: '본인', spouse: '배우자', parent: '부모', child: '자녀', sibling: '형제/자매'
-  };
+  // sample records so the demo dashboard/review are meaningful offline
+  function seedLocalIfEmpty() {
+    if (loadLocal().length) return;
+    const mk = (mAgo, o) => { const d = new Date(); d.setMonth(d.getMonth() - mAgo); d.setDate(10); return { id: 'S' + mAgo + (o.employeeId), appliedAt: d.toISOString(), updatedAt: d.toISOString(), reviewComment: '', relationship: 'self', treatmentType: '외래', excludedAmount: 0, documents: [{type:'scan',name:'detail.pdf'},{type:'receipt',name:'receipt.jpg'}], note: '', ...o }; };
+    saveLocal([
+      mk(0, { employeeName: '김민수', employeeId: '20210112', factory: '여수사업장', department: '생산팀', position: '대리', hospitalName: '여수전남병원', diseaseName: '급성 위염', selfPayAmount: 180000, supportAmount: 180000, status: 'pending' }),
+      mk(0, { employeeName: '이서연', employeeId: '20190455', factory: '울산사업장', department: '품질관리팀', position: '과장', hospitalName: '울산대학교병원', diseaseName: '디스크 수술', treatmentType: '수술', selfPayAmount: 1450000, excludedAmount: 250000, supportAmount: 1200000, status: 'reviewing' }),
+      mk(1, { employeeName: '박지훈', employeeId: '20220781', factory: '대전사업장', department: '연구개발팀', position: '주임', hospitalName: '대전성모병원', diseaseName: '골절', selfPayAmount: 420000, supportAmount: 420000, status: 'approved' }),
+      mk(1, { employeeName: '최유진', employeeId: '20180233', factory: '여수사업장', department: '안전환경팀', position: '차장', hospitalName: '한국병원', diseaseName: '건강검진', treatmentType: '검진', selfPayAmount: 90000, supportAmount: 90000, status: 'approved' }),
+      mk(2, { employeeName: '정현우', employeeId: '20230990', factory: '인천사업장', department: '경영지원팀', position: '사원', hospitalName: '인천세종병원', diseaseName: '입원 치료', treatmentType: '입원', selfPayAmount: 760000, excludedAmount: 60000, supportAmount: 700000, status: 'approved' }),
+      mk(3, { employeeName: '한소희', employeeId: '20170044', factory: '본사', department: '영업팀', position: '부장', hospitalName: '서울아산병원', diseaseName: '미제출 서류', selfPayAmount: 300000, supportAmount: 300000, status: 'rejected', reviewComment: '영수증 원본 누락', documents: [] }),
+    ]);
+  }
 
-  // Cache of all docs for client-side filtering
+  const STATUS_LABELS = { pending: '접수', reviewing: '검토중', approved: '승인', rejected: '반려' };
+  const RELATIONSHIP_LABELS = { self: '본인', spouse: '배우자', parent: '부모', child: '자녀' };
+  const DOC_LABELS = { scan: '진료비 세부내역서', receipt: '진료비 영수증', prescription: '처방전' };
+
   let allDocs = [];
+  let pendingSubmit = null; // staged form data awaiting confirm
 
-  // ── Utilities ────────────────────────────────────────────
-  function fmtAmount(n) { return Number(n).toLocaleString('ko-KR') + '원'; }
-  function fmtDate(v) {
-    if (!v) return '-';
-    const d = v instanceof Timestamp ? v.toDate() : new Date(v);
-    return d.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+  // ── Utilities ──
+  function toDate(v) { if (!v) return null; if (typeof v.toDate === 'function') return v.toDate(); const d = new Date(v); return isNaN(d) ? null : d; }
+  function fmtAmount(n) { return Number(n || 0).toLocaleString('ko-KR') + '원'; }
+  function fmtMan(n) { const v = Number(n || 0); return v >= 10000 ? (v/10000).toLocaleString('ko-KR', {maximumFractionDigits:1}) + '만원' : v.toLocaleString('ko-KR') + '원'; }
+  function fmtDate(v) { const d = toDate(v); return d ? d.toLocaleDateString('ko-KR', { year:'numeric', month:'2-digit', day:'2-digit' }) : '-'; }
+  function fmtDatetime(v) { const d = toDate(v); return d ? d.toLocaleDateString('ko-KR', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }) : '-'; }
+  function monthKey(v) { const d = toDate(v); return d ? d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') : null; }
+  function statusBadge(s) { return `<span class="badge ${s}"><span class="badge-dot"></span>${STATUS_LABELS[s] || s}</span>`; }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  // priority: derived from amount + waiting time
+  const PRIO_LABELS = { urgent: '긴급', high: '높음', normal: '보통' };
+  function priorityOf(a) {
+    const amt = Number(a.supportAmount || 0);
+    if (amt >= 1000000) return 'urgent';
+    if (amt >= 300000) return 'high';
+    return 'normal';
   }
-  function fmtDatetime(v) {
-    if (!v) return '-';
-    const d = v instanceof Timestamp ? v.toDate() : new Date(v);
-    return d.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+  function prioBadge(p) {
+    const dot = { urgent: '🔴', high: '🟠', normal: '⚪' }[p] || '⚪';
+    return `<span class="prio ${p}">${dot} ${PRIO_LABELS[p]}</span>`;
   }
-  function statusBadge(status) {
-    return `<span class="badge ${status}"><span class="badge-dot"></span>${STATUS_LABELS[status] || status}</span>`;
-  }
+  const PRIO_ORDER = { urgent: 0, high: 1, normal: 2 };
+
+  function docCount(a) { return (a.documents || []).length; }
+
   function showToast(msg, type = '') {
     const c = document.getElementById('toastContainer');
     const t = document.createElement('div');
@@ -769,132 +1089,235 @@
     setTimeout(() => t.remove(), 3500);
   }
 
-  // ── Data loading ─────────────────────────────────────────
+  // ── Data loading ──
   async function loadAll() {
-    const snap = await getDocs(query(COL, orderBy('appliedAt', 'desc')));
-    allDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    try { allDocs = await Data.getAll(); }
+    catch (e) { allDocs = []; showToast('데이터 불러오기 오류: ' + e.message, 'error'); }
     return allDocs;
   }
 
-  function applyFilter(docs, search, status) {
-    let result = docs;
-    if (status && status !== 'all') result = result.filter(a => a.status === status);
+  function filterDocs(docs, { search, factory, dept, status }) {
+    let r = docs;
+    if (status && status !== 'all') r = r.filter(a => a.status === status);
+    if (factory && factory !== 'all') r = r.filter(a => a.factory === factory);
+    if (dept && dept !== 'all') r = r.filter(a => a.department === dept);
     if (search) {
       const q = search.toLowerCase();
-      result = result.filter(a =>
-        (a.applicantName || '').includes(q) ||
-        (a.patientName || '').includes(q) ||
-        (a.diagnosisName || '').toLowerCase().includes(q) ||
-        (a.hospitalName || '').includes(q)
+      r = r.filter(a =>
+        (a.employeeName || '').toLowerCase().includes(q) ||
+        (a.employeeId || '').toLowerCase().includes(q) ||
+        (a.patientName || '').toLowerCase().includes(q) ||
+        (a.diseaseName || '').toLowerCase().includes(q) ||
+        (a.hospitalName || '').toLowerCase().includes(q)
       );
     }
-    return result;
+    return r;
   }
 
-  // ── Status page ───────────────────────────────────────────
-  window.renderStatus = function() {
-    const search = document.getElementById('statusSearch').value;
-    const status = document.getElementById('statusFilter').value;
-    const tbody = document.getElementById('statusTableBody');
-    const rows = applyFilter(allDocs, search, status);
-    if (!rows.length) {
-      tbody.innerHTML = '<tr><td colspan="7" class="table-empty">검색 결과가 없습니다.</td></tr>';
-      return;
-    }
-    tbody.innerHTML = rows.map(a => `
-      <tr>
-        <td><strong>${a.applicantName}</strong></td>
-        <td>${a.diagnosisName}</td>
-        <td>${a.hospitalName}</td>
-        <td class="amount">${fmtAmount(a.requestedAmount)}</td>
-        <td>${fmtDatetime(a.appliedAt)}</td>
-        <td>${statusBadge(a.status)}</td>
-        <td><button class="btn btn-sm btn-outline" onclick="window.openDetail('${a.id}', false)">상세보기</button></td>
-      </tr>`).join('');
-  };
+  // ── Review page ──
+  window.renderReview = function() {
+    const opts = {
+      search: document.getElementById('rvSearch').value,
+      factory: document.getElementById('rvFactory').value,
+      dept: document.getElementById('rvDept').value,
+      status: document.getElementById('rvStatus').value,
+    };
+    const sort = document.getElementById('rvSort').value;
+    let rows = filterDocs(allDocs, opts);
 
-  // ── Admin page ────────────────────────────────────────────
-  window.renderAdmin = function() {
-    const search = document.getElementById('adminSearch').value;
-    const status = document.getElementById('adminFilter').value;
-    const tbody = document.getElementById('adminTableBody');
-    const rows = applyFilter(allDocs, search, status);
+    rows = rows.slice().sort((a, b) => {
+      if (sort === 'amount') return Number(b.supportAmount||0) - Number(a.supportAmount||0);
+      if (sort === 'recent') {
+        const ta = toDate(a.appliedAt)?.getTime() || 0;
+        const tb = toDate(b.appliedAt)?.getTime() || 0;
+        return tb - ta;
+      }
+      // priority
+      const pa = PRIO_ORDER[priorityOf(a)], pb = PRIO_ORDER[priorityOf(b)];
+      if (pa !== pb) return pa - pb;
+      return Number(b.supportAmount||0) - Number(a.supportAmount||0);
+    });
 
-    // Stats
-    document.getElementById('stat-total').textContent = allDocs.length;
+    // stats
+    document.getElementById('rv-total').textContent = allDocs.length;
     ['pending','reviewing','approved','rejected'].forEach(s =>
-      document.getElementById('stat-' + s).textContent = allDocs.filter(a => a.status === s).length
-    );
+      document.getElementById('rv-' + s).textContent = allDocs.filter(a => a.status === s).length);
+    document.getElementById('reviewCount').textContent = rows.length + '건';
 
+    const tbody = document.getElementById('reviewTableBody');
     if (!rows.length) {
-      tbody.innerHTML = '<tr><td colspan="8" class="table-empty">검색 결과가 없습니다.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9" class="table-empty">검색 결과가 없습니다.</td></tr>';
       return;
     }
     tbody.innerHTML = rows.map(a => `
       <tr>
-        <td><strong>${a.applicantName}</strong></td>
-        <td>${a.diagnosisName}</td>
-        <td>${a.hospitalName}</td>
-        <td class="amount">${fmtAmount(a.requestedAmount)}</td>
-        <td>${fmtDatetime(a.appliedAt)}</td>
-        <td>${a.incomeCertified ? '✅' : '❌'}</td>
+        <td>${prioBadge(priorityOf(a))}</td>
+        <td><div class="cell-strong">${esc(a.employeeName)}</div><div class="cell-muted">${esc(a.employeeId)} · ${esc(a.position||'')}</div></td>
+        <td><div>${esc(a.factory||'-')}</div><div class="cell-muted">${esc(a.department||'-')}</div></td>
+        <td><div>${esc(a.diseaseName)}</div><div class="cell-muted">${esc(a.hospitalName)}</div></td>
+        <td class="amount">${fmtAmount(a.supportAmount)}</td>
+        <td><span class="chip">📎 ${docCount(a)}/3</span></td>
+        <td class="cell-muted">${fmtDate(a.appliedAt)}</td>
         <td>${statusBadge(a.status)}</td>
         <td>
           <div class="action-cell">
-            <button class="btn btn-xs btn-primary" onclick="window.openDetail('${a.id}', true)">심사</button>
-            <button class="btn btn-xs btn-danger" onclick="window.deleteApp('${a.id}')">삭제</button>
+            <button class="btn btn-xs btn-primary" onclick="window.openDetail('${a.id}', true)">검수</button>
+            <button class="btn btn-xs btn-outline" onclick="window.deleteApp('${a.id}')">삭제</button>
           </div>
         </td>
       </tr>`).join('');
   };
 
-  // ── Detail modal ──────────────────────────────────────────
-  window.openDetail = function(id, adminMode) {
+  // ── Dashboard ──
+  window.renderDashboard = function() {
+    const total = allDocs.length;
+    const by = s => allDocs.filter(a => a.status === s);
+    const approved = by('approved'), rejected = by('rejected');
+    const progress = by('pending').length + by('reviewing').length;
+    const sum = arr => arr.reduce((s,a) => s + Number(a.supportAmount||0), 0);
+
+    document.getElementById('db-total').textContent = total;
+    document.getElementById('db-total-amt').textContent = '총 지원신청액 ' + fmtMan(sum(allDocs));
+    document.getElementById('db-approved').textContent = approved.length;
+    document.getElementById('db-approved-amt').textContent = '승인액 ' + fmtMan(sum(approved));
+    document.getElementById('db-progress').textContent = progress;
+    document.getElementById('db-rejected').textContent = rejected.length;
+    const decided = approved.length + rejected.length;
+    document.getElementById('db-approval-rate').textContent = '승인율 ' + (decided ? Math.round(approved.length/decided*100) : 0) + '%';
+
+    // monthly chart (last 6 months from current date 기준 데이터)
+    const monthsSet = {};
+    allDocs.forEach(a => { const k = monthKey(a.appliedAt); if (k) monthsSet[k] = true; });
+    let keys = Object.keys(monthsSet).sort();
+    keys = keys.slice(-6);
+    if (!keys.length) keys = [];
+    const buckets = keys.map(k => ({ k, pending:0, reviewing:0, approved:0, rejected:0, total:0 }));
+    allDocs.forEach(a => {
+      const k = monthKey(a.appliedAt);
+      const b = buckets.find(x => x.k === k);
+      if (b) { b[a.status] = (b[a.status]||0) + 1; b.total++; }
+    });
+    const maxTotal = Math.max(1, ...buckets.map(b => b.total));
+    const chart = document.getElementById('monthlyChart');
+    if (!buckets.length) {
+      chart.innerHTML = '<div class="table-empty" style="width:100%">표시할 데이터가 없습니다.</div>';
+    } else {
+      chart.innerHTML = buckets.map(b => {
+        const h = pct => Math.round(pct / maxTotal * 160);
+        const seg = (cls, n) => n ? `<div class="bar-seg ${cls}" style="height:${h(n)}px" title="${STATUS_LABELS[cls]}: ${n}"></div>` : '';
+        const [, mm] = b.k.split('-');
+        return `<div class="bar-col">
+          <div class="bar-value">${b.total}</div>
+          <div class="bar-stack">${seg('approved',b.approved)}${seg('reviewing',b.reviewing)}${seg('pending',b.pending)}${seg('rejected',b.rejected)}</div>
+          <div class="bar-label">${Number(mm)}월</div>
+        </div>`;
+      }).join('');
+    }
+
+    // factory rank
+    renderRank('factoryRank', groupCount('factory'));
+    // dept rank
+    renderRank('deptRank', groupCount('department'));
+
+    // status summary
+    const statusSummary = document.getElementById('statusSummary');
+    const order = ['pending','reviewing','approved','rejected'];
+    const labelIcon = { pending:'📥', reviewing:'🔍', approved:'✅', rejected:'⛔' };
+    statusSummary.innerHTML = order.map(s => {
+      const n = by(s).length;
+      const pct = total ? Math.round(n/total*100) : 0;
+      return `<div class="psum-row">
+        <div class="psum-top">
+          <span class="psum-label">${labelIcon[s]} ${STATUS_LABELS[s]}</span>
+          <span class="psum-pct">${n}건 · ${pct}%</span>
+        </div>
+        <div class="psum-track"><div class="psum-fill ${s}" style="width:${pct}%"></div></div>
+      </div>`;
+    }).join('');
+  };
+
+  function groupCount(field) {
+    const map = {};
+    allDocs.forEach(a => {
+      const key = a[field] || '미지정';
+      if (!map[key]) map[key] = { count: 0, amount: 0 };
+      map[key].count++; map[key].amount += Number(a.supportAmount||0);
+    });
+    return Object.entries(map).map(([name, v]) => ({ name, ...v })).sort((a,b) => b.count - a.count);
+  }
+
+  function renderRank(elId, rows) {
+    const el = document.getElementById(elId);
+    if (!rows.length) { el.innerHTML = '<div class="table-empty">데이터가 없습니다.</div>'; return; }
+    const max = Math.max(1, ...rows.map(r => r.count));
+    el.innerHTML = rows.map(r => `
+      <div class="rank-row">
+        <div class="rank-top">
+          <span class="rank-name">${esc(r.name)}</span>
+          <span class="rank-meta">${r.count}건 · ${fmtMan(r.amount)}</span>
+        </div>
+        <div class="rank-bar-track"><div class="rank-bar-fill" style="width:${Math.round(r.count/max*100)}%"></div></div>
+      </div>`).join('');
+  }
+
+  // ── Detail / review modal ──
+  window.openDetail = function(id, reviewMode) {
     const a = allDocs.find(d => d.id === id);
     if (!a) return;
-    const selfPay = a.totalMedicalCost - (a.insuranceCoverage || 0);
-    document.getElementById('modalTitle').textContent = '신청 상세 — ' + a.applicantName;
+    const computed = Number(a.selfPayAmount||0) - Number(a.excludedAmount||0);
+    document.getElementById('modalTitle').textContent = '신청 상세 — ' + a.employeeName;
+
+    const docsHtml = ['scan','receipt','prescription'].map(key => {
+      const found = (a.documents || []).find(d => d.type === key);
+      return found
+        ? `<div class="doc-row attached"><span class="doc-ic">📄</span><span class="doc-name">${esc(DOC_LABELS[key])} — ${esc(found.name)}</span><span class="doc-status">첨부됨</span></div>`
+        : `<div class="doc-row missing"><span class="doc-ic">○</span><span class="doc-name">${esc(DOC_LABELS[key])}</span><span class="doc-status">미첨부</span></div>`;
+    }).join('');
+
     document.getElementById('modalBody').innerHTML = `
       <div class="detail-grid">
-        <div class="detail-section-title">신청인 정보</div>
-        <div class="detail-item"><div class="detail-label">성명</div><div class="detail-value">${a.applicantName}</div></div>
-        <div class="detail-item"><div class="detail-label">생년월일</div><div class="detail-value">${fmtDate(a.birthDate)}</div></div>
-        <div class="detail-item"><div class="detail-label">연락처</div><div class="detail-value">${a.phone}</div></div>
-        <div class="detail-item"><div class="detail-label">소득 기준 확인</div><div class="detail-value">${a.incomeCertified ? '✅ 확인됨' : '❌ 미확인'}</div></div>
-        <div class="detail-item full"><div class="detail-label">주소</div><div class="detail-value">${a.address}</div></div>
+        <div class="detail-section-title">👤 신청자 정보</div>
+        <div class="detail-item"><div class="detail-label">성명</div><div class="detail-value">${esc(a.employeeName)}</div></div>
+        <div class="detail-item"><div class="detail-label">사번</div><div class="detail-value">${esc(a.employeeId)}</div></div>
+        <div class="detail-item"><div class="detail-label">사업장</div><div class="detail-value">${esc(a.factory||'-')}</div></div>
+        <div class="detail-item"><div class="detail-label">부서 / 직급</div><div class="detail-value">${esc(a.department||'-')} / ${esc(a.position||'-')}</div></div>
+        <div class="detail-item"><div class="detail-label">환자명</div><div class="detail-value">${esc(a.patientName || a.employeeName)}</div></div>
+        <div class="detail-item"><div class="detail-label">관계</div><div class="detail-value">${RELATIONSHIP_LABELS[a.relationship] || a.relationship || '-'}</div></div>
 
-        <div class="detail-section-title">환자·진료 정보</div>
-        <div class="detail-item"><div class="detail-label">환자명</div><div class="detail-value">${a.patientName}</div></div>
-        <div class="detail-item"><div class="detail-label">관계</div><div class="detail-value">${RELATIONSHIP_LABELS[a.relationship] || a.relationship}</div></div>
-        <div class="detail-item"><div class="detail-label">진료 병원</div><div class="detail-value">${a.hospitalName}</div></div>
-        <div class="detail-item"><div class="detail-label">질환 분류</div><div class="detail-value">${a.diseaseCategory}</div></div>
-        <div class="detail-item full"><div class="detail-label">진단명</div><div class="detail-value">${a.diagnosisName}</div></div>
-        <div class="detail-item"><div class="detail-label">치료 기간 (시작)</div><div class="detail-value">${fmtDate(a.treatmentPeriodStart)}</div></div>
-        <div class="detail-item"><div class="detail-label">치료 기간 (종료)</div><div class="detail-value">${fmtDate(a.treatmentPeriodEnd)}</div></div>
+        <div class="detail-section-title">🏥 진료 정보</div>
+        <div class="detail-item"><div class="detail-label">병원명</div><div class="detail-value">${esc(a.hospitalName)}</div></div>
+        <div class="detail-item"><div class="detail-label">병명</div><div class="detail-value">${esc(a.diseaseName)}</div></div>
+        <div class="detail-item"><div class="detail-label">진료 구분</div><div class="detail-value">${esc(a.treatmentType||'-')}</div></div>
+        <div class="detail-item"><div class="detail-label">진료 기간</div><div class="detail-value">${fmtDate(a.treatmentStart)} ~ ${a.treatmentEnd ? fmtDate(a.treatmentEnd) : '진료중'}</div></div>
 
-        <div class="detail-section-title">의료비 내역</div>
-        <div class="detail-item"><div class="detail-label">총 의료비</div><div class="detail-value">${fmtAmount(a.totalMedicalCost)}</div></div>
-        <div class="detail-item"><div class="detail-label">건강보험 지원금</div><div class="detail-value">${fmtAmount(a.insuranceCoverage || 0)}</div></div>
-        <div class="detail-item"><div class="detail-label">본인부담금</div><div class="detail-value">${fmtAmount(selfPay)}</div></div>
-        <div class="detail-item"><div class="detail-label">신청 지원금액</div><div class="detail-value amount-highlight">${fmtAmount(a.requestedAmount)}</div></div>
+        <div class="detail-section-title">💰 비용 항목</div>
+        <div class="detail-item"><div class="detail-label">본인부담액</div><div class="detail-value">${fmtAmount(a.selfPayAmount)}</div></div>
+        <div class="detail-item"><div class="detail-label">제외금액</div><div class="detail-value">${fmtAmount(a.excludedAmount)}</div></div>
+        <div class="detail-item"><div class="detail-label">산정 지원액</div><div class="detail-value">${fmtAmount(computed)}</div></div>
+        <div class="detail-item"><div class="detail-label">신청 지원금액</div><div class="detail-value amount-highlight">${fmtAmount(a.supportAmount)}</div></div>
 
-        <div class="detail-section-title">심사 정보</div>
+        <div class="detail-section-title">📎 증빙 서류 (${docCount(a)}/3)</div>
+        <div class="doc-list">${docsHtml}</div>
+
+        <div class="detail-section-title">📝 검수 정보</div>
+        <div class="detail-item"><div class="detail-label">우선순위</div><div class="detail-value">${prioBadge(priorityOf(a))}</div></div>
         <div class="detail-item"><div class="detail-label">현재 상태</div><div class="detail-value">${statusBadge(a.status)}</div></div>
         <div class="detail-item"><div class="detail-label">신청일</div><div class="detail-value">${fmtDatetime(a.appliedAt)}</div></div>
-        <div class="detail-item full"><div class="detail-label">심사 의견</div><div class="detail-value">${a.reviewComment || '—'}</div></div>
+        <div class="detail-item full"><div class="detail-label">특이사항</div><div class="detail-value">${esc(a.note) || '—'}</div></div>
+        <div class="detail-item full"><div class="detail-label">검수 의견</div><div class="detail-value">${esc(a.reviewComment) || '—'}</div></div>
       </div>
-      ${adminMode ? `
+      ${reviewMode ? `
       <div class="review-panel">
-        <div class="review-panel-header">🖊 심사 처리</div>
+        <div class="review-panel-header">🖊 검수 처리</div>
         <div class="review-panel-body">
-          <div class="review-status-row">
-            <button class="btn btn-sm btn-warning" onclick="window.updateStatus('${a.id}', 'reviewing')">심사 중으로 변경</button>
-            <button class="btn btn-sm btn-success" onclick="window.updateStatus('${a.id}', 'approved')">승인</button>
-            <button class="btn btn-sm btn-danger" onclick="window.updateStatus('${a.id}', 'rejected')">반려</button>
-          </div>
           <div class="form-group">
-            <label>심사 의견</label>
-            <textarea id="reviewComment" rows="3" placeholder="심사 의견을 입력하세요...">${a.reviewComment || ''}</textarea>
+            <label>검수 의견</label>
+            <textarea id="reviewComment" rows="3" placeholder="검수 의견 또는 반려 사유를 입력하세요...">${esc(a.reviewComment) || ''}</textarea>
+          </div>
+          <div class="review-status-row">
+            <button class="btn btn-sm btn-warning" onclick="window.updateStatus('${a.id}','reviewing')">검토중으로 변경</button>
+            <button class="btn btn-sm btn-success" onclick="window.updateStatus('${a.id}','approved')">승인</button>
+            <button class="btn btn-sm btn-danger" onclick="window.updateStatus('${a.id}','rejected')">반려</button>
           </div>
         </div>
       </div>` : ''}
@@ -903,142 +1326,214 @@
     document.getElementById('detailModal').classList.add('open');
   };
 
-  window.closeModal = function() {
-    document.getElementById('detailModal').classList.remove('open');
-  };
+  window.closeModal = function() { document.getElementById('detailModal').classList.remove('open'); };
+  document.getElementById('detailModal').addEventListener('click', e => { if (e.target === e.currentTarget) window.closeModal(); });
 
-  document.getElementById('detailModal').addEventListener('click', e => {
-    if (e.target === e.currentTarget) window.closeModal();
-  });
-
-  // ── Status update ─────────────────────────────────────────
   window.updateStatus = async function(id, status) {
     const comment = document.getElementById('reviewComment')?.value || '';
+    if (status === 'rejected' && !comment.trim()) { showToast('반려 시 사유를 입력해주세요.', 'warning'); return; }
     try {
-      await updateDoc(doc(db, 'applications', id), {
-        status,
-        reviewComment: comment,
-        updatedAt: serverTimestamp(),
-      });
-      logEvent(analytics, 'application_status_updated', { status });
-      const names = { reviewing: '심사 중', approved: '승인', rejected: '반려' };
-      showToast('상태가 [' + (names[status] || status) + ']으로 변경되었습니다.', 'success');
+      await Data.update(id, { status, reviewComment: comment });
+      track('claim_status_updated', { status });
+      showToast('상태가 [' + STATUS_LABELS[status] + ']으로 변경되었습니다.', 'success');
       window.closeModal();
-      await loadAll();
-      renderAdmin();
-    } catch (err) {
-      showToast('오류: ' + err.message, 'error');
-    }
+      await loadAll(); renderReview(); renderDashboard();
+    } catch (err) { showToast('오류: ' + err.message, 'error'); }
   };
 
-  // ── Delete ────────────────────────────────────────────────
   window.deleteApp = async function(id) {
     if (!confirm('이 신청 내역을 삭제하시겠습니까?')) return;
     try {
-      await deleteDoc(doc(db, 'applications', id));
-      logEvent(analytics, 'application_deleted');
+      await Data.remove(id);
+      track('claim_deleted');
       showToast('삭제되었습니다.', 'success');
-      await loadAll();
-      renderAdmin();
-    } catch (err) {
-      showToast('오류: ' + err.message, 'error');
-    }
+      await loadAll(); renderReview(); renderDashboard();
+    } catch (err) { showToast('오류: ' + err.message, 'error'); }
   };
 
-  // ── Apply form ────────────────────────────────────────────
-  document.getElementById('applyForm').addEventListener('submit', async e => {
+  // ── File attach (capture metadata only — no Storage) ──
+  const attachedDocs = {}; // { scan: {type,name}, ... }
+  window.onFile = function(input, type, label) {
+    const box = document.getElementById('box-' + type);
+    const fileLabel = document.getElementById('file-' + type);
+    if (input.files && input.files[0]) {
+      attachedDocs[type] = { type, name: input.files[0].name, label };
+      box.classList.add('has-file');
+      fileLabel.textContent = '✓ ' + input.files[0].name;
+    } else {
+      delete attachedDocs[type];
+      box.classList.remove('has-file');
+      fileLabel.textContent = '';
+    }
+    updateDocCounter();
+  };
+  function updateDocCounter() {
+    document.getElementById('docCounter').textContent = '첨부 서류 ' + Object.keys(attachedDocs).length + '/3';
+  }
+
+  // ── Cost auto-calc ──
+  window.recalcSupport = function() {
+    const form = document.getElementById('applyForm');
+    const self = Number(form.selfPayAmount.value || 0);
+    const excl = Number(form.excludedAmount.value || 0);
+    const computed = Math.max(0, self - excl);
+    document.getElementById('computedSupport').textContent = computed.toLocaleString('ko-KR') + '원';
+    if (!form.supportAmount.value || form.supportAmount.dataset.auto === '1') {
+      form.supportAmount.value = computed || '';
+      form.supportAmount.dataset.auto = '1';
+    }
+  };
+  document.querySelector('[name="supportAmount"]').addEventListener('input', function(){ this.dataset.auto = '0'; });
+
+  // ── Progress steps highlight on scroll/focus ──
+  const stepEls = [...document.querySelectorAll('#progressSteps .pstep')];
+  function setActiveStep(n) {
+    stepEls.forEach(el => {
+      const s = Number(el.dataset.step);
+      el.classList.toggle('done', s < n);
+      el.classList.toggle('active', s === n);
+    });
+  }
+  document.querySelectorAll('.form-section[data-section]').forEach(sec => {
+    sec.addEventListener('focusin', () => setActiveStep(Number(sec.dataset.section)));
+  });
+
+  // ── Validation + confirm flow ──
+  const REQUIRED = {
+    employeeName: '성명을 입력하세요.',
+    employeeId: '사번을 입력하세요.',
+    factory: '사업장을 선택하세요.',
+    department: '부서를 선택하세요.',
+    position: '직급을 선택하세요.',
+    treatmentStart: '진료 시작일을 입력하세요.',
+    hospitalName: '병원명을 입력하세요.',
+    diseaseName: '병명을 입력하세요.',
+    selfPayAmount: '본인부담액을 입력하세요.',
+    supportAmount: '신청 지원금액을 입력하세요.',
+  };
+
+  document.getElementById('applyForm').addEventListener('submit', e => {
     e.preventDefault();
     document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
+    document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
 
     const form = e.target;
-    const fd = new FormData(form);
-    const data = Object.fromEntries(fd.entries());
-    data.incomeCertified = form.incomeCertified.checked;
+    const data = Object.fromEntries(new FormData(form).entries());
+    data.agree = form.agree.checked;
 
-    let hasError = false;
-    const required = {
-      applicantName: '성명을 입력하세요.',
-      birthDate: '생년월일을 입력하세요.',
-      phone: '연락처를 입력하세요.',
-      address: '주소를 입력하세요.',
-      hospitalName: '병원명을 입력하세요.',
-      diseaseCategory: '질환 분류를 선택하세요.',
-      diagnosisName: '진단명을 입력하세요.',
-      treatmentPeriodStart: '치료 시작일을 입력하세요.',
-      totalMedicalCost: '총 의료비를 입력하세요.',
-      requestedAmount: '신청 지원금액을 입력하세요.',
-    };
-    for (const [field, msg] of Object.entries(required)) {
+    let firstBad = null, hasError = false;
+    for (const [field, msg] of Object.entries(REQUIRED)) {
       if (!data[field]) {
-        document.getElementById('err-' + field).textContent = msg;
+        const err = document.getElementById('err-' + field);
+        if (err) err.textContent = msg;
+        const input = form[field]; if (input) input.classList.add('invalid');
+        if (!firstBad) firstBad = input;
         hasError = true;
       }
     }
-    if (hasError) { showToast('필수 항목을 모두 입력해주세요.', 'error'); return; }
+    if (!data.agree) { document.getElementById('err-agree').textContent = '동의가 필요합니다.'; hasError = true; if (!firstBad) firstBad = form.agree; }
+    if (hasError) {
+      showToast('필수 항목을 확인해주세요.', 'error');
+      firstBad?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
 
-    const btn = document.getElementById('submitBtn');
-    btn.disabled = true;
-    btn.textContent = '제출 중...';
+    pendingSubmit = data;
+    const computed = Math.max(0, Number(data.selfPayAmount||0) - Number(data.excludedAmount||0));
+    document.getElementById('confirmBody').innerHTML = `
+      <div class="detail-grid">
+        <div class="detail-item"><div class="detail-label">신청자</div><div class="detail-value">${esc(data.employeeName)} (${esc(data.employeeId)})</div></div>
+        <div class="detail-item"><div class="detail-label">소속</div><div class="detail-value">${esc(data.factory)} · ${esc(data.department)}</div></div>
+        <div class="detail-item"><div class="detail-label">병원 / 병명</div><div class="detail-value">${esc(data.hospitalName)} / ${esc(data.diseaseName)}</div></div>
+        <div class="detail-item"><div class="detail-label">진료 구분</div><div class="detail-value">${esc(data.treatmentType)}</div></div>
+        <div class="detail-item"><div class="detail-label">본인부담액</div><div class="detail-value">${fmtAmount(data.selfPayAmount)}</div></div>
+        <div class="detail-item"><div class="detail-label">제외금액</div><div class="detail-value">${fmtAmount(data.excludedAmount)}</div></div>
+        <div class="detail-item full"><div class="detail-label">신청 지원금액</div><div class="detail-value amount-highlight">${fmtAmount(data.supportAmount)}</div></div>
+        <div class="detail-item full"><div class="detail-label">첨부 서류</div><div class="detail-value">${Object.keys(attachedDocs).length ? Object.values(attachedDocs).map(d=>esc(d.label)).join(', ') : '없음'}</div></div>
+      </div>
+      ${Object.keys(attachedDocs).length < 1 ? '<div class="notice info" style="margin:16px 0 0"><span class="notice-icon">⚠️</span><div>첨부된 증빙 서류가 없습니다. 그대로 제출하시겠습니까?</div></div>' : ''}
+    `;
+    document.getElementById('confirmModal').classList.add('open');
+  });
 
+  window.closeConfirm = function() { document.getElementById('confirmModal').classList.remove('open'); };
+  document.getElementById('confirmModal').addEventListener('click', e => { if (e.target === e.currentTarget) window.closeConfirm(); });
+
+  document.getElementById('confirmSubmitBtn').addEventListener('click', async () => {
+    if (!pendingSubmit) return;
+    const data = pendingSubmit;
+    const btn = document.getElementById('confirmSubmitBtn');
+    btn.disabled = true; btn.textContent = '제출 중...';
     try {
-      const ref = await addDoc(COL, {
-        applicantName: data.applicantName,
-        birthDate: data.birthDate,
-        phone: data.phone,
-        address: data.address,
-        patientName: data.patientName || data.applicantName,
+      const id = await Data.add({
+        employeeName: data.employeeName,
+        employeeId: data.employeeId,
+        factory: data.factory,
+        department: data.department,
+        position: data.position,
+        phone: data.phone || '',
+        patientName: data.patientName || data.employeeName,
         relationship: data.relationship || 'self',
+        treatmentStart: data.treatmentStart,
+        treatmentEnd: data.treatmentEnd || null,
         hospitalName: data.hospitalName,
-        diseaseCategory: data.diseaseCategory,
-        diagnosisName: data.diagnosisName,
-        treatmentPeriodStart: data.treatmentPeriodStart,
-        treatmentPeriodEnd: data.treatmentPeriodEnd || null,
-        totalMedicalCost: Number(data.totalMedicalCost),
-        insuranceCoverage: Number(data.insuranceCoverage) || 0,
-        requestedAmount: Number(data.requestedAmount),
-        incomeCertified: data.incomeCertified,
+        diseaseName: data.diseaseName,
+        treatmentType: data.treatmentType || '외래',
+        selfPayAmount: Number(data.selfPayAmount),
+        excludedAmount: Number(data.excludedAmount) || 0,
+        supportAmount: Number(data.supportAmount),
+        documents: Object.values(attachedDocs).map(d => ({ type: d.type, name: d.name })),
+        note: data.note || '',
         status: 'pending',
         reviewComment: '',
-        appliedAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
       });
-
-      logEvent(analytics, 'application_submitted', {
-        disease_category: data.diseaseCategory,
-        requested_amount: Number(data.requestedAmount),
-      });
-
-      showToast('신청 완료! 접수번호: ' + ref.id.slice(0, 8).toUpperCase(), 'success');
-      form.reset();
+      track('claim_submitted', { factory: data.factory, support_amount: Number(data.supportAmount) });
+      window.closeConfirm();
+      showToast('신청 완료! 접수번호: ' + String(id).slice(0,8).toUpperCase(), 'success');
+      resetForm();
       await loadAll();
       document.querySelector('.nav-btn:nth-child(2)').click();
     } catch (err) {
       showToast('제출 오류: ' + err.message, 'error');
     } finally {
-      btn.disabled = false;
-      btn.textContent = '신청서 제출';
+      btn.disabled = false; btn.textContent = '신청서 제출';
+      pendingSubmit = null;
     }
   });
 
-  // ── Navigation ────────────────────────────────────────────
+  // ── Navigation ──
   window.showPage = function(name, btn) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('page-' + name).classList.add('active');
     if (btn) btn.classList.add('active');
-    if (name === 'status') renderStatus();
-    if (name === 'admin') renderAdmin();
+    if (name === 'review') renderReview();
+    if (name === 'dashboard') renderDashboard();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   window.resetForm = function() {
-    document.getElementById('applyForm').reset();
+    const form = document.getElementById('applyForm');
+    form.reset();
     document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
+    document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+    Object.keys(attachedDocs).forEach(k => delete attachedDocs[k]);
+    ['scan','receipt','prescription'].forEach(t => {
+      document.getElementById('box-' + t).classList.remove('has-file');
+      document.getElementById('file-' + t).textContent = '';
+    });
+    document.getElementById('computedSupport').textContent = '0원';
+    form.supportAmount.dataset.auto = '1';
+    updateDocCounter();
+    setActiveStep(1);
   };
 
-  // ── Bootstrap ─────────────────────────────────────────────
+  // ── Bootstrap ──
   (async () => {
+    await initBackend();
     await loadAll();
-    renderStatus();
+    renderReview();
+    renderDashboard();
   })();
 </script>
 </body>
